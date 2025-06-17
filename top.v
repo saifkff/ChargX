@@ -18,10 +18,10 @@ module top (
     wire [31:0] wb_data;
     wire ex_branch_taken,ex_jal_enb,ex_wenb,ex_rs2_imm_sel,ex_branch_enb,ex_lui_enb,ex_auipc_wenb,ex_sb,ex_sh,ex_sw;
     wire [31:0] ex_store_data,ex_alu_result,ex_alu_data_B,ex_rs1_data,ex_rs2_data,ex_imm,ex_pcplus4,ex_rs1_forwarded,ex_rs2_forwarded;
-    wire wb_load_enb,wb_jal_enb,wb_lui_enb,wb_auipc_wenb,mem_wenb,mem_load_enb,mem_sb,mem_sh,mem_sw;
+    wire mem_store_enb,ex_store_enb,id_store_enb,wb_load_enb,wb_jal_enb,wb_lui_enb,wb_auipc_wenb,mem_wenb,mem_load_enb,mem_sb,mem_sh,mem_sw;
     wire [1:0] forward_a,forward_b;
     wire [31:0] mem_alu_result,mem_store_data,mem_read_data,wb_mem_data,wb_alu_result;
-    wire [31:0] wb_pcplus4;
+    wire [31:0] wb_pcplus4,id_rs1_forwarded,id_rs2_forwarded;
     wire [2:0] wb_mux_sel;
 
     pc_plus_4 pcplus4(
@@ -91,11 +91,11 @@ module top (
         .load_enb(id_load_enb),
         .jal_enb(id_jal_enb),
         .branch_enb(id_branch_enb),
-        .in_to_pr(id_in_to_pr)
+        .in_to_pr(id_in_to_pr),.store_enb(id_store_enb)
     );
     hazard_detction hazard_detction(
         .id_rs1(id_rs1),
-        .id_rs2(id_rs2),
+        .id_rs2(id_rs2),.ex_rd(ex_rd),
         .ex_load_enb(ex_load_enb),
         .branch_taken(ex_branch_taken),
         .jal_enb(ex_jal_enb),
@@ -116,9 +116,9 @@ module top (
         .sb_in(id_sb),
         .sh_in(id_sh),
         .sw_in(id_sw),
-        .rs1_data_in(id_rs1_data),
-        .rs2_data_in(id_rs2_data),
-        .imm_in(id_imm),
+        .rs1_data_in(id_rs1_forwarded),
+        .rs2_data_in(id_rs2_forwarded),
+        .imm_in(id_imm),.store_enb_in(id_store_enb),
         .pcplus4_in(id_pcplus4),
         .rd_in(id_rd),.rs1_in(id_rs1),.rs2_in(id_rs2),
         .rs1_out(ex_rs1),.rs2_out(ex_rs2),
@@ -128,16 +128,18 @@ module top (
         .load_enb_out(ex_load_enb),.jal_enb_out(ex_jal_enb),.branch_enb_out(ex_branch_enb),
         .lui_enb_out(ex_lui_enb),.auipc_wenb_out(ex_auipc_wenb),.sb_out(ex_sb),.sh_out(ex_sh),.sw_out(ex_sw),
         .rs1_data_out(ex_rs1_data),.rs2_data_out(ex_rs2_data),.imm_out(ex_imm),
-        .pcplus4_out(ex_pcplus4),.rd_out(ex_rd),.stall(stall),.flush(flush)
+        .pcplus4_out(ex_pcplus4),.rd_out(ex_rd),.stall(stall),.flush(flush),.store_enb_out(ex_store_enb)
     );
     forwarding_unit forwarding_unit(
-        .ex_rs1(ex_rs1),.ex_rs2(ex_rs2),
+        .ex_rs1(ex_rs1),.ex_rs2(ex_rs2),.id_rs1(id_rs1),.id_rs2(id_rs2),
         .mem_rd(mem_rd),.wb_rd(wb_rd),
-        .mem_wenb(mem_wenb),.wb_wenb(wb_wenb),
+        .mem_wenb(mem_store_enb),.wb_wenb(wb_wenb),.mem_wb(mem_wenb),
         .forward_a(forward_a),.forward_b(forward_b)
     );
     assign ex_rs1_forwarded = (forward_a == 2'b10) ? mem_alu_result : (forward_a == 2'b01) ? wb_data : ex_rs1_data;
     assign ex_rs2_forwarded = (forward_b == 2'b10) ? mem_alu_result : (forward_b == 2'b01) ? wb_data : ex_rs2_data;
+    assign id_rs1_forwarded = (forward_a == 2'b11) ? wb_data : id_rs1_data;
+    assign id_rs2_forwarded = (forward_b == 2'b11) ? wb_data : id_rs2_data;
     rs2orimm rs2orimm(
         .rs2(ex_rs2_forwarded),.imm(ex_imm),
         .select(ex_rs2_imm_sel),.dataB(ex_alu_data_B)
@@ -163,18 +165,19 @@ module top (
     EX_MEM ex_mem(
         .clk(clk),
         .rst(rst),
-        .wenb_in(ex_wenb),
+        .wb_in(ex_wenb),
         .load_enb_in(ex_load_enb),
         .sb_in(ex_sb),
         .sh_in(ex_sh),
-        .sw_in(ex_sw),
+        .sw_in(ex_sw),.store_enb_in(ex_store_enb),
         .alu_result_in(ex_alu_result),.store_data_in(ex_store_data),
         .rd_in(ex_rd),.rs1_in(ex_rs1),.rs2_in(ex_rs2),
-        .wenb_out(mem_wenb),.load_enb_out(mem_load_enb),.sb_out(mem_sb),
+        .wb_out(mem_wenb),.load_enb_out(mem_load_enb),.sb_out(mem_sb),
         .sh_out(mem_sh),.sw_out(mem_sw),
         .alu_result_out(mem_alu_result),.store_data_out(mem_store_data),
-        .rd_out(mem_rd),.flush(flush)
+        .rd_out(mem_rd),.flush(flush),.store_enb_out(mem_store_enb)
     );
+    assign store_wenb = (mem_sb || mem_sw || mem_sh);
     data_mem data_mem(
         .clk(clk),.load_enb(mem_load_enb),.sb(mem_sb),.sh(mem_sh),.sw(mem_sw),
         .lb(1'b0),.lw(1'b0),.lh(1'b0),.lhu(1'b0),.lbu(1'b0),
@@ -185,7 +188,7 @@ module top (
         .clk(clk),
         .rst(rst),
         .load_enb_in(mem_load_enb),.wenb_in(mem_wenb),
-        .jal_enb_in(ex_jal_enb), // From EX/MEM
+        .jal_enb_in(ex_jal_enb), 
         .lui_enb_in(ex_lui_enb),
         .auipc_wenb_in(ex_auipc_wenb),
         .mem_data_in(mem_read_data),.alu_result_in(mem_alu_result),

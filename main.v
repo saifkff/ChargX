@@ -11,11 +11,11 @@ endmodule
 module ID_EX (
     input wire clk,rst,
     input wire [3:0] alu_sel_in,
-    input wire wenb_in,rs2_imm_sel_in,load_enb_in,jal_enb_in,branch_enb_in,lui_enb_in,auipc_wenb_in,sb_in,sh_in,sw_in,
+    input wire wenb_in,rs2_imm_sel_in,load_enb_in,jal_enb_in,branch_enb_in,lui_enb_in,auipc_wenb_in,sb_in,sh_in,sw_in,store_enb_in,
     input wire [31:0] rs1_data_in,rs2_data_in,imm_in,pcplus4_in,
     input wire [4:0] rd_in,rs1_in,rs2_in,
     output reg [3:0] alu_sel_out,
-    output reg wenb_out,rs2_imm_sel_out,load_enb_out,jal_enb_out,branch_enb_out,lui_enb_out,auipc_wenb_out,sb_out,sh_out,sw_out,
+    output reg wenb_out,rs2_imm_sel_out,load_enb_out,jal_enb_out,branch_enb_out,lui_enb_out,auipc_wenb_out,sb_out,sh_out,sw_out,store_enb_out,
     output reg [31:0] rs1_data_out,rs2_data_out,imm_out,pcplus4_out,
     output reg [4:0] rd_out,rs1_out,rs2_out,
     input wire stall,flush
@@ -26,7 +26,7 @@ module ID_EX (
             wenb_out <= 1'b0; rs2_imm_sel_out <= 1'b0; load_enb_out <= 1'b0; jal_enb_out <= 1'b0; branch_enb_out <= 1'b0; lui_enb_out <= 1'b0;
             auipc_wenb_out <= 1'b0; sb_out <= 1'b0; sw_out <= 1'b0; sh_out <= 1'b0;
             rs1_data_out <= 31'b0; rs2_data_out <= 31'b0; imm_out <= 31'b0; pcplus4_out <= 31'b0;
-            rd_out <= 5'b0; rs1_out<=0;rs2_out<=0;
+            rd_out <= 5'b0; rs1_out<=0;rs2_out<=0;store_enb_out<=0;
         end
         else begin
             alu_sel_out <= alu_sel_in;
@@ -34,7 +34,7 @@ module ID_EX (
             lui_enb_out <= lui_enb_in;
             auipc_wenb_out <= auipc_wenb_in; sb_out <= sb_in; sw_out <= sw_in; sh_out <= sh_in;
             rs1_data_out <= rs1_data_in; rs2_data_out <= rs2_data_in; imm_out <= imm_in; pcplus4_out <= pcplus4_in;
-            rd_out <= rd_in;rs1_out<=rs1_in;rs2_out<=rs2_in;
+            rd_out <= rd_in;rs1_out<=rs1_in;rs2_out<=rs2_in;store_enb_out<=store_enb_in;
         end
     end
     
@@ -103,7 +103,7 @@ module control_unit (
     output add, sll, slt, sltu, xorrr, srl, sra, orrr, andd,
     output out0, out1, out2, out3,
     output wenb, rs2_imm_sel,
-    output lui_enb, auipc_wenb, load_enb, jal_enb, branch_enb, in_to_pr
+    output lui_enb, auipc_wenb, load_enb, jal_enb, branch_enb, in_to_pr,store_enb
 );
     wire i0, i1, i2, i3, i4, i5, i6, i7, i8;
     wire [8:0] selected_bits;
@@ -129,7 +129,7 @@ module control_unit (
     assign andr = (~i0)&(~i1)&(i2)&(i3)&(~i4)&(i5)&(i6)&(i7)&(~i8);
     // I_Type
     assign addi = (~i0)&(~i1)&(i2)&(~i3)&(~i4)&(~i5)&(~i6)&(~i7)&(~i8);
-  assign addi2 = (~i0)&(~i1)&(i2)&(~i3)&(~i4)&(~i5)&(~i6)&(~i7)&(i8);
+    assign addi2 = (~i0)&(~i1)&(i2)&(~i3)&(~i4)&(~i5)&(~i6)&(~i7)&(i8);
     assign slli = (~i0)&(~i1)&(i2)&(~i3)&(~i4)&(i5)&(~i6)&(~i7)&(~i8); 
     assign slti = (~i0)&(~i1)&(i2)&(~i3)&(~i4)&(~i5)&(i6)&(~i7)&(~i8);
     assign sltui = (~i0)&(~i1)&(i2)&(~i3)&(~i4)&(i5)&(i6)&(~i7)&(~i8);
@@ -149,6 +149,7 @@ module control_unit (
     assign lhu = (~i0)&(~i1)&(~i2)&(~i3)&(~i4)&(i5)&(~i6)&(i7)&(~i8);
     // load enable 
     assign load_enb = (lb) | (lh) | (lw) | (lbu) | (lhu);
+    assign store_enb = (sb) | (sh) | (sw);
     //Jump instructions
 
     assign jal = (i0)&(i1)&(~i2)&(i3)&(i4)&(~i5)&(~i6)&(~i7)&(~i8);
@@ -178,19 +179,19 @@ module control_unit (
     assign sra = (srar) | (srai);
     assign orrr = (orr) | (ori);
     assign andd = (andr) | (andi);
-      assign out0 = (sub)| (sra) | (beq) | (bne) | (blt) | (bge) | (bltu) | (bgeu);
-  assign out1 = (xorrr) | (orrr) | (andd) | (blt)  | (bge) | (bltu) | (bgeu) | (srl);
-  assign out2 =  (orrr) | (andd) | (beq)  | (bne) | (bltu) | (bgeu) | (slt) | (sltu) ;
-  assign out3 =  (sra) | (bne)  | (bge) | (bgeu) | (andd) | (sll) | (srl) | (sltu) ;
+    assign out0 = (sub)| (sra) | (beq) | (bne) | (blt) | (bge) | (bltu) | (bgeu);
+    assign out1 = (xorrr) | (orrr) | (andd) | (blt)  | (bge) | (bltu) | (bgeu) | (srl);
+    assign out2 =  (orrr) | (andd) | (beq)  | (bne) | (bltu) | (bgeu) | (slt) | (sltu) ;
+    assign out3 =  (sra) | (bne)  | (bge) | (bgeu) | (andd) | (sll) | (srl) | (sltu) ;
     always @(*) begin
         sel = {out0, out1, out2, out3};
-     end 
+    end 
 
     // write enable and rs2 immediate selection
     assign wenb = (lw) | (jal) | (lh) | (lb) | (addr) | (sub) | (srar) | (sllr) | (orr) | (andr) | (sltur) | (sltr) | (srai) | (xorr) | (srlr) | (andi) | (auipc_wenb) | (ori) | (xori) | (sltui) | (srli) | (slli) | (addi) | (slti) | (sb) | (sh) | (sw) | (lbu) | (lhu) | (jalr) | (lui_enb) | (addi2);
     assign rs2_imm_sel = (lui_enb) | (jal) | (lb) | (lh) |(addi) | (sh) | (sb) | (sw) | (slli) | (srai) | (auipc_wenb) | (ori) | (andi) | (srli) | (xori) | (sltui) | (slti) | (lbu) | (lhu) | (jalr) | (lw) | (jalreverse) | (addi2);
     // Select bit for mux
-  assign in_to_pr = ~(jal | jalr | branch_taken);
+    assign in_to_pr = ~(jal | jalr | branch_taken);
     always @(*) 
     begin
       casez({branch_taken, jalr, {jal | jalreverse}, in_to_pr})
@@ -215,7 +216,6 @@ module data_mem(
 
     
     always @(*) begin
-        if (load_enb) begin
             case (1'b1)
                 lb:  read_data = {{24{memory[address][7]}}, memory[address]};  
                 lh:  read_data = {{16{memory[address+1][7]}}, memory[address+1], memory[address]};  
@@ -224,10 +224,8 @@ module data_mem(
                 lhu: read_data = {16'b0, memory[address+1], memory[address]};  
                 default: read_data = 32'b0;
             endcase
-        end 
-        else begin
             read_data = 32'b0;
-        end
+        
     end
 
     always @(posedge clk) begin
@@ -265,7 +263,7 @@ module IF_ID (
             instruction_out <= 32'b0;
             pcplus4_out <= 32'b0;
         end
-        else begin
+        else if (!stall) begin
             instruction_out <= instruction_in;
             pcplus4_out <= pcplus4_in;
         end
@@ -273,27 +271,33 @@ module IF_ID (
     
 endmodule
 module forwarding_unit (
-    input wire [4:0] ex_rs1,ex_rs2,
+    input wire [4:0] ex_rs1,ex_rs2,id_rs1,id_rs2,
     input wire [4:0] mem_rd,wb_rd,
-    input wire mem_wenb,wb_wenb,clk,
+    input wire mem_wenb,wb_wenb,clk,mem_wb,
     output reg [1:0] forward_a,forward_b
 );
     always @(*) begin
-        if (mem_wenb && mem_rd != 0 && mem_rd == ex_rs1) begin 
+        if ((mem_wenb || mem_wb) && mem_rd != 0 && mem_rd == ex_rs1) begin 
             forward_a = 2'b10;
         end
         else if (wb_wenb &&  wb_rd != 0 && wb_rd == ex_rs1) begin
             forward_a = 2'b01;
         end
+        else if (wb_wenb && wb_rd != 0 && wb_rd == id_rs1) begin
+            forward_a = 2'b11;
+        end
         else begin
             forward_a = 2'b00;
         end
 
-        if (mem_wenb && mem_rd != 0 && mem_rd == ex_rs2) begin
+        if ((mem_wenb || mem_wb) && mem_rd != 0 && mem_rd == ex_rs2) begin
             forward_b = 2'b10;
         end
         else if (wb_wenb && wb_rd !=0 && wb_rd == ex_rs2) begin
             forward_b = 2'b01;
+        end
+        else if (wb_wenb && wb_rd != 0 && wb_rd == id_rs2) begin
+            forward_b = 2'b11;
         end
         else begin
             forward_b = 2'b00;
@@ -308,7 +312,7 @@ module hazard_detction(
     input wire branch_taken,jal_enb,
     output wire stall,flush
 );
-    assign stall = ex_load_enb && (ex_rd != 0) && (ex_rd == id_rs1 || ex_rd == id_rs2);
+    assign stall = ex_load_enb && (ex_rd != 0) && ((ex_rd == id_rs1 || ex_rd == id_rs2));
     assign flush = branch_taken || jal_enb;
 
 endmodule
@@ -326,7 +330,7 @@ module fetch (
         .clk(clk),
         .rst(rst),
         .pc_next(pc_next),
-        .pc_write(1'b1),
+        .pc_write(!stall),
         .pc_out(pc)
     );
 
@@ -382,24 +386,24 @@ module immediate_generator(
 endmodule
 module EX_MEM (
     input wire clk,rst,
-    input wire wenb_in,load_enb_in,sb_in,sh_in,sw_in,
+    input wire wb_in,load_enb_in,sb_in,sh_in,sw_in,store_enb_in,
     input wire [31:0] alu_result_in, store_data_in,
     input wire [4:0] rd_in,rs1_in,rs2_in,
-    output reg wenb_out, load_enb_out,sb_out,sh_out,sw_out,
+    output reg wb_out,load_enb_out,sb_out,sh_out,sw_out,store_enb_out,
     output reg [31:0] alu_result_out,store_data_out,
     output reg [4:0] rd_out,rs1_out,rs2_out,
     input wire flush
 );
     always @(posedge clk or posedge rst) begin
         if (rst || flush) begin
-            wenb_out <= 1'b0; load_enb_out <= 1'b0; sb_out <= 1'b0; sh_out <= 1'b0; sw_out <= 1'b0;
+            wb_out <= 1'b0; load_enb_out <= 1'b0; sb_out <= 1'b0; sh_out <= 1'b0; sw_out <= 1'b0;
             alu_result_out <= 32'b0; store_data_out <= 32'b0;
-            rd_out <= 5'b0;rs1_out<=5'b0;
+            rd_out <= 5'b0;rs1_out<=5'b0;store_enb_out<=0;
         end
         else begin 
-            wenb_out <= wenb_in; load_enb_out <= load_enb_in; sb_out <= sb_in; sh_out <= sh_in; sw_out <= sw_in;
+            wb_out <= wb_in; load_enb_out <= load_enb_in; sb_out <= sb_in; sh_out <= sh_in; sw_out <= sw_in;
             alu_result_out <= alu_result_in; store_data_out <= store_data_in;
-            rd_out <=rd_in;
+            rd_out <=rd_in;store_enb_out<=store_enb_in;
         end
     end
     
