@@ -28,7 +28,7 @@ module ID_EX (
             rs1_data_out <= 31'b0; rs2_data_out <= 31'b0; imm_out <= 31'b0; pcplus4_out <= 31'b0;
             rd_out <= 5'b0; rs1_out<=0;rs2_out<=0;store_enb_out<=0;
         end
-        else begin
+        else if (!stall) begin
             alu_sel_out <= alu_sel_in;
             wenb_out <= wenb_in; rs2_imm_sel_out <= rs2_imm_sel_in; load_enb_out <= load_enb_in; jal_enb_out <= jal_enb_in; branch_enb_out <= branch_enb_in;
             lui_enb_out <= lui_enb_in;
@@ -312,8 +312,8 @@ module hazard_detction(
     input wire branch_taken,jal_enb,
     output wire stall,flush
 );
-    assign stall = ex_load_enb && (ex_rd != 0) && ((ex_rd == id_rs1 || ex_rd == id_rs2));
-    assign flush = branch_taken || jal_enb;
+    assign stall = branch_taken;
+    assign flush = branch_taken;
 
 endmodule
 module fetch (
