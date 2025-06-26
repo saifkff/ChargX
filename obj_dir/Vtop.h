@@ -101,7 +101,7 @@ VL_MODULE(Vtop) {
         CData/*0:0*/ top__DOT__mem_sw;
         CData/*1:0*/ top__DOT__forward_a;
         CData/*1:0*/ top__DOT__forward_b;
-        CData/*2:0*/ top__DOT__wb_mux_sel;
+        CData/*2:0*/ top__DOT__pri_enc_sel;
         CData/*0:0*/ top__DOT__flush_for_if;
         CData/*0:0*/ top__DOT__id_lb;
         CData/*0:0*/ top__DOT__id_lh;
@@ -123,6 +123,8 @@ VL_MODULE(Vtop) {
         CData/*0:0*/ top__DOT__wb_wenb;
         CData/*4:0*/ top__DOT__mem_rs1;
         CData/*4:0*/ top__DOT__mem_rs2;
+        CData/*0:0*/ top__DOT__mem_auipc_wenb;
+        CData/*0:0*/ top__DOT__mem_lui_enb;
         CData/*3:0*/ top__DOT__immediate_generator__DOT__sel;
         CData/*0:0*/ top__DOT__control_unit__DOT__orrr;
         CData/*0:0*/ top__DOT__control_unit__DOT__andd;
@@ -159,10 +161,10 @@ VL_MODULE(Vtop) {
         IData/*31:0*/ top__DOT__ex_current_pc;
         IData/*31:0*/ top__DOT__if_current_pc;
         IData/*31:0*/ top__DOT__ex_jal_return_add;
-        IData/*31:0*/ top__DOT__fetch__DOT__pc;
-        IData/*31:0*/ top__DOT__fetch__DOT__pc_next;
     };
     struct {
+        IData/*31:0*/ top__DOT__fetch__DOT__pc;
+        IData/*31:0*/ top__DOT__fetch__DOT__pc_next;
         WData/*1023:0*/ top__DOT__regfile__DOT__registers[32];
         IData/*31:0*/ top__DOT__regfile__DOT__i;
         IData/*31:0*/ top__DOT__fetch__DOT__IM__DOT__memory[4097];
@@ -185,7 +187,7 @@ VL_MODULE(Vtop) {
     CData/*0:0*/ __Vclklast__TOP__rst;
     IData/*31:0*/ __Vm_traceActivity;
     static CData/*1:0*/ __Vtable1_top__DOT__ex_sel_bit_mux[16];
-    static CData/*2:0*/ __Vtable2_top__DOT__wb_mux_sel[32];
+    static CData/*2:0*/ __Vtable2_top__DOT__pri_enc_sel[32];
     
     // INTERNAL VARIABLES
     // Internals; generally not touched by application code

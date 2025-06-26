@@ -231,20 +231,28 @@ module data_mem(
 );
     reg [7:0] memory [4096:0];
     always @(*) begin
-        if (lb) begin
-            read_data = {{24{memory[address][7]}}, memory[address]};  
+        if (load_enb) begin
+            if (lb) begin
+                read_data = {{24{memory[address][7]}}, memory[address]};  
+            end
+            else if (lh) begin
+                read_data = {{16{memory[address+1][7]}}, memory[address+1], memory[address]};  
+            end
+            else if (lw) begin
+                read_data = {memory[address+3], memory[address+2], memory[address+1], memory[address]};  
+            end
+            else if (lbu) begin
+                read_data = {24'b0, memory[address]};  
+            end
+            else if (lhu) begin
+                read_data = {16'b0, memory[address+1], memory[address]};  
+            end
+            else begin
+                read_data = 32'b0; // Default for load_enb = 1 but no specific load
+            end
         end
-        else if (lh) begin
-            read_data = {{16{memory[address+1][7]}}, memory[address+1], memory[address]};  
-        end
-        else if (lw) begin
-            read_data = {memory[address+3], memory[address+2], memory[address+1], memory[address]};  
-        end
-        else if (lbu) begin
-            read_data = {24'b0, memory[address]};  
-        end
-        else if (lhu) begin
-            read_data = {16'b0, memory[address+1], memory[address]};  
+        else begin
+            read_data = 32'b0; // Default when no load
         end
     end
 
@@ -363,7 +371,6 @@ module hazard_detction(
         else if (ex_load_enb && ((ex_rd == id_rs1 && ex_rd != 0) || (ex_rd == id_rs2 && ex_rd != 0))) begin
             stall = 1;
             flush = 1; 
-            flush_for_if = 1;
         end
     end
 
@@ -440,7 +447,7 @@ module EX_MEM (
     input wire clk,rst,
     input wire [31:0] jal_return_add_in,
     input wire [1:0] sel_bit_mux_in,
-    input wire wb_in,load_enb_in,sb_in,sh_in,sw_in,store_enb_in,jal_enb_in,
+    input wire wb_in,load_enb_in,sb_in,sh_in,sw_in,store_enb_in,jal_enb_in,auipc_wenb_in,lui_enb_in,
     input wire [31:0] alu_result_in, store_data_in,pc_plus_imm_in,
     input wire [4:0] rd_in,rs1_in,rs2_in,
     input wire lb_in,lh_in,lw_in,lbu_in,lhu_in,
@@ -449,7 +456,7 @@ module EX_MEM (
     output reg [4:0] rd_out,rs1_out,rs2_out,
     output reg [1:0] sel_bit_mux_out,
     output reg [31:0] jal_return_add_out,
-    output reg lb_out,lh_out,lw_out,lbu_out,lhu_out,
+    output reg lb_out,lh_out,lw_out,lbu_out,lhu_out,auipc_wenb_out,lui_enb_out,
     input wire flush
 );
     always @(posedge clk or posedge rst) begin
@@ -459,6 +466,7 @@ module EX_MEM (
             rd_out <= 5'b0;rs1_out<=5'b0;store_enb_out<=0;jal_enb_out<=0;pc_plus_imm_out<=32'b0;sel_bit_mux_out<=2'b0;jal_return_add_out<=32'b0;
             lb_out <= 1'b0; lh_out <= 1'b0; lw_out <= 1'b0;
             lhu_out <= 1'b0; lbu_out <= 1'b0; rs1_out <= 5'b0; rs2_out <= 5'b0;
+            auipc_wenb_out <= 1'b0; lui_enb_out <= 1'b0;
         end
         else begin 
             wb_out <= wb_in; load_enb_out <= load_enb_in; sb_out <= sb_in; sh_out <= sh_in; sw_out <= sw_in;
@@ -468,6 +476,7 @@ module EX_MEM (
             lb_out <= lb_in; lw_out <= lw_in; lh_out <= lh_in;
             lbu_out <= lbu_in; lhu_out<= lhu_in;
             rs1_out <= rs1_in; rs2_out <= rs2_in;
+            auipc_wenb_out <= auipc_wenb_in; lui_enb_out <= lui_enb_in;
         end
     end
     
@@ -609,13 +618,12 @@ module priority_encoder_8to3 (
 );
     wire [4:0] input_concat = {lui_enable, enable_for_auipc, jal_enb, load_enable, alu_result};
 
-    
     always @(*) begin
         casez (input_concat)
-            5'b1????: sel = 3'b100; // LUI enable
-            5'b01???: sel = 3'b011; // AUIPC enable
-            5'b001??: sel = 3'b010; // JAL enable
-            5'b0001?: sel = 3'b001; // Load enable
+            5'b10000: sel = 3'b100; // LUI enable
+            5'b01000: sel = 3'b011; // AUIPC enable
+            5'b00100: sel = 3'b010; // JAL enable
+            5'b00010: sel = 3'b001; // Load enable
             5'b00001: sel = 3'b000; // ALU result
             default:  sel = 3'b000; // Default (ALU result)
         endcase

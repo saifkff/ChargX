@@ -168,7 +168,7 @@ void Vtop::traceChgThis__2(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, u
                                   ? 0U : vlTOPp->top__DOT__regfile__DOT__registers[
                                  (0x1fU & (vlTOPp->top__DOT__id_instruction 
                                            >> 0x14U))]))),32);
-        vcdp->chgBus(c+337,(vlTOPp->top__DOT__wb_mux_sel),3);
+        vcdp->chgBus(c+337,(vlTOPp->top__DOT__pri_enc_sel),3);
         vcdp->chgBus(c+345,((vlTOPp->top__DOT__if_current_pc 
                              + vlTOPp->top__DOT__id_imm)),32);
         vcdp->chgBit(c+353,(vlTOPp->top__DOT__id_lb));
@@ -450,35 +450,37 @@ void Vtop::traceChgThis__5(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, u
         vcdp->chgBit(c+1177,(vlTOPp->top__DOT__wb_wenb));
         vcdp->chgBus(c+1185,(vlTOPp->top__DOT__mem_rs1),5);
         vcdp->chgBus(c+1193,(vlTOPp->top__DOT__mem_rs2),5);
-        vcdp->chgBus(c+1201,(vlTOPp->top__DOT__fetch__DOT__pc),32);
-        vcdp->chgArray(c+1209,(vlTOPp->top__DOT__regfile__DOT__registers),1024);
-        vcdp->chgBus(c+1465,(vlTOPp->top__DOT__regfile__DOT__i),32);
-        vcdp->chgBus(c+1473,((0x7fU & vlTOPp->top__DOT__id_instruction)),7);
-        vcdp->chgBus(c+1481,((7U & (vlTOPp->top__DOT__id_instruction 
+        vcdp->chgBit(c+1201,(vlTOPp->top__DOT__mem_auipc_wenb));
+        vcdp->chgBit(c+1209,(vlTOPp->top__DOT__mem_lui_enb));
+        vcdp->chgBus(c+1217,(vlTOPp->top__DOT__fetch__DOT__pc),32);
+        vcdp->chgArray(c+1225,(vlTOPp->top__DOT__regfile__DOT__registers),1024);
+        vcdp->chgBus(c+1481,(vlTOPp->top__DOT__regfile__DOT__i),32);
+        vcdp->chgBus(c+1489,((0x7fU & vlTOPp->top__DOT__id_instruction)),7);
+        vcdp->chgBus(c+1497,((7U & (vlTOPp->top__DOT__id_instruction 
                                     >> 0xcU))),3);
-        vcdp->chgBus(c+1489,(((0x3f8U & (vlTOPp->top__DOT__id_instruction 
+        vcdp->chgBus(c+1505,(((0x3f8U & (vlTOPp->top__DOT__id_instruction 
                                          << 3U)) | 
                               (7U & (vlTOPp->top__DOT__id_instruction 
                                      >> 0xcU)))),10);
-        vcdp->chgBit(c+1497,((1U & (vlTOPp->top__DOT__id_instruction 
-                                    >> 2U))));
-        vcdp->chgBit(c+1505,((1U & (vlTOPp->top__DOT__id_instruction 
-                                    >> 3U))));
         vcdp->chgBit(c+1513,((1U & (vlTOPp->top__DOT__id_instruction 
-                                    >> 4U))));
+                                    >> 2U))));
         vcdp->chgBit(c+1521,((1U & (vlTOPp->top__DOT__id_instruction 
-                                    >> 5U))));
+                                    >> 3U))));
         vcdp->chgBit(c+1529,((1U & (vlTOPp->top__DOT__id_instruction 
-                                    >> 6U))));
+                                    >> 4U))));
         vcdp->chgBit(c+1537,((1U & (vlTOPp->top__DOT__id_instruction 
-                                    >> 0xcU))));
+                                    >> 5U))));
         vcdp->chgBit(c+1545,((1U & (vlTOPp->top__DOT__id_instruction 
-                                    >> 0xdU))));
+                                    >> 6U))));
         vcdp->chgBit(c+1553,((1U & (vlTOPp->top__DOT__id_instruction 
-                                    >> 0xeU))));
+                                    >> 0xcU))));
         vcdp->chgBit(c+1561,((1U & (vlTOPp->top__DOT__id_instruction 
+                                    >> 0xdU))));
+        vcdp->chgBit(c+1569,((1U & (vlTOPp->top__DOT__id_instruction 
+                                    >> 0xeU))));
+        vcdp->chgBit(c+1577,((1U & (vlTOPp->top__DOT__id_instruction 
                                     >> 0x1eU))));
-        vcdp->chgBus(c+1569,((((IData)(vlTOPp->top__DOT__wb_lui_enb) 
+        vcdp->chgBus(c+1585,((((IData)(vlTOPp->top__DOT__wb_lui_enb) 
                                << 4U) | (((IData)(vlTOPp->top__DOT__wb_auipc_wenb) 
                                           << 3U) | 
                                          (((IData)(vlTOPp->top__DOT__wb_jal_enb) 
@@ -500,14 +502,14 @@ void Vtop::traceChgThis__6(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, u
     if (0 && vcdp && c) {}  // Prevent unused
     // Body
     {
-        vcdp->chgBit(c+1577,(vlTOPp->top__DOT__ex_sb));
-        vcdp->chgBit(c+1585,(vlTOPp->top__DOT__ex_sh));
-        vcdp->chgBit(c+1593,(vlTOPp->top__DOT__ex_sw));
-        vcdp->chgBit(c+1601,(vlTOPp->top__DOT__mem_sb));
-        vcdp->chgBit(c+1609,(vlTOPp->top__DOT__mem_sh));
-        vcdp->chgBit(c+1617,(vlTOPp->top__DOT__mem_sw));
-        vcdp->chgBus(c+1625,(vlTOPp->top__DOT__mem_alu_result),32);
-        vcdp->chgBus(c+1633,(vlTOPp->top__DOT__mem_store_data),32);
+        vcdp->chgBit(c+1593,(vlTOPp->top__DOT__ex_sb));
+        vcdp->chgBit(c+1601,(vlTOPp->top__DOT__ex_sh));
+        vcdp->chgBit(c+1609,(vlTOPp->top__DOT__ex_sw));
+        vcdp->chgBit(c+1617,(vlTOPp->top__DOT__mem_sb));
+        vcdp->chgBit(c+1625,(vlTOPp->top__DOT__mem_sh));
+        vcdp->chgBit(c+1633,(vlTOPp->top__DOT__mem_sw));
+        vcdp->chgBus(c+1641,(vlTOPp->top__DOT__mem_alu_result),32);
+        vcdp->chgBus(c+1649,(vlTOPp->top__DOT__mem_store_data),32);
     }
 }
 
@@ -517,7 +519,7 @@ void Vtop::traceChgThis__7(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, u
     if (0 && vcdp && c) {}  // Prevent unused
     // Body
     {
-        vcdp->chgBit(c+1641,(vlTOPp->clk));
-        vcdp->chgBit(c+1649,(vlTOPp->rst));
+        vcdp->chgBit(c+1657,(vlTOPp->clk));
+        vcdp->chgBit(c+1665,(vlTOPp->rst));
     }
 }

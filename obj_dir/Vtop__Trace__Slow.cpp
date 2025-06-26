@@ -60,10 +60,10 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
     if (0 && vcdp && c) {}  // Prevent unused
     // Body
     {
-        vcdp->declBit(c+1641,"clk", false,-1);
-        vcdp->declBit(c+1649,"rst", false,-1);
-        vcdp->declBit(c+1641,"top clk", false,-1);
-        vcdp->declBit(c+1649,"top rst", false,-1);
+        vcdp->declBit(c+1657,"clk", false,-1);
+        vcdp->declBit(c+1665,"rst", false,-1);
+        vcdp->declBit(c+1657,"top clk", false,-1);
+        vcdp->declBit(c+1665,"top rst", false,-1);
         vcdp->declBus(c+1,"top if_instruction", false,-1, 31,0);
         vcdp->declBus(c+697,"top if_pcplus4", false,-1, 31,0);
         vcdp->declBus(c+697,"top if_pc_out", false,-1, 31,0);
@@ -72,7 +72,7 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBus(c+713,"top mem_sel_bit_mux", false,-1, 1,0);
         vcdp->declBus(c+721,"top ex_pc_plus_imm", false,-1, 31,0);
         vcdp->declBus(c+721,"top ex_pc_plus_imm_2", false,-1, 31,0);
-        vcdp->declBus(c+1657,"top ex_rs1_plus_imm_for_jalr", false,-1, 31,0);
+        vcdp->declBus(c+1673,"top ex_rs1_plus_imm_for_jalr", false,-1, 31,0);
         vcdp->declBus(c+729,"top id_instruction", false,-1, 31,0);
         vcdp->declBus(c+737,"top id_pcplus4", false,-1, 31,0);
         vcdp->declBit(c+569,"top stall", false,-1);
@@ -138,9 +138,9 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBit(c+865,"top ex_branch_enb", false,-1);
         vcdp->declBit(c+873,"top ex_lui_enb", false,-1);
         vcdp->declBit(c+881,"top ex_auipc_wenb", false,-1);
-        vcdp->declBit(c+1577,"top ex_sb", false,-1);
-        vcdp->declBit(c+1585,"top ex_sh", false,-1);
-        vcdp->declBit(c+1593,"top ex_sw", false,-1);
+        vcdp->declBit(c+1593,"top ex_sb", false,-1);
+        vcdp->declBit(c+1601,"top ex_sh", false,-1);
+        vcdp->declBit(c+1609,"top ex_sw", false,-1);
         vcdp->declBus(c+617,"top ex_store_data", false,-1, 31,0);
         vcdp->declBus(c+625,"top ex_alu_result", false,-1, 31,0);
         vcdp->declBus(c+633,"top ex_alu_data_B", false,-1, 31,0);
@@ -159,13 +159,13 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBit(c+961,"top wb_auipc_wenb", false,-1);
         vcdp->declBit(c+969,"top mem_wenb", false,-1);
         vcdp->declBit(c+977,"top mem_load_enb", false,-1);
-        vcdp->declBit(c+1601,"top mem_sb", false,-1);
-        vcdp->declBit(c+1609,"top mem_sh", false,-1);
-        vcdp->declBit(c+1617,"top mem_sw", false,-1);
+        vcdp->declBit(c+1617,"top mem_sb", false,-1);
+        vcdp->declBit(c+1625,"top mem_sh", false,-1);
+        vcdp->declBit(c+1633,"top mem_sw", false,-1);
         vcdp->declBus(c+297,"top forward_a", false,-1, 1,0);
         vcdp->declBus(c+305,"top forward_b", false,-1, 1,0);
-        vcdp->declBus(c+1625,"top mem_alu_result", false,-1, 31,0);
-        vcdp->declBus(c+1633,"top mem_store_data", false,-1, 31,0);
+        vcdp->declBus(c+1641,"top mem_alu_result", false,-1, 31,0);
+        vcdp->declBus(c+1649,"top mem_store_data", false,-1, 31,0);
         vcdp->declBus(c+665,"top mem_read_data", false,-1, 31,0);
         vcdp->declBus(c+985,"top wb_mem_data", false,-1, 31,0);
         vcdp->declBus(c+993,"top wb_alu_result", false,-1, 31,0);
@@ -175,7 +175,7 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBus(c+329,"top id_rs2_forwarded", false,-1, 31,0);
         vcdp->declBus(c+1009,"top mem_pc_plus_imm", false,-1, 31,0);
         vcdp->declBus(c+1017,"top wb_pc_plus_imm", false,-1, 31,0);
-        vcdp->declBus(c+337,"top wb_mux_sel", false,-1, 2,0);
+        vcdp->declBus(c+337,"top pri_enc_sel", false,-1, 2,0);
         vcdp->declBus(c+345,"top jal_jump_target", false,-1, 31,0);
         vcdp->declBus(c+737,"top jal_return_add", false,-1, 31,0);
         vcdp->declBus(c+1025,"top mem_jal_return_add", false,-1, 31,0);
@@ -193,7 +193,7 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBus(c+1049,"top forward_d1", false,-1, 1,0);
         vcdp->declBus(c+1057,"top forward_d2", false,-1, 1,0);
         vcdp->declBus(c+1065,"top id_current_pc", false,-1, 31,0);
-        vcdp->declBus(c+1665,"top ex_current_pc", false,-1, 31,0);
+        vcdp->declBus(c+1681,"top ex_current_pc", false,-1, 31,0);
         vcdp->declBus(c+1073,"top if_current_pc", false,-1, 31,0);
         vcdp->declBus(c+1081,"top ex_jal_return_add", false,-1, 31,0);
         vcdp->declBit(c+1089,"top ex_lb", false,-1);
@@ -211,10 +211,12 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBus(c+1185,"top mem_rs1", false,-1, 4,0);
         vcdp->declBus(c+1193,"top mem_rs2", false,-1, 4,0);
         vcdp->declBus(c+313,"top id_auipc_pc_plus_imm", false,-1, 31,0);
-        vcdp->declBus(c+1201,"top pcplus4 pc", false,-1, 31,0);
+        vcdp->declBit(c+1201,"top mem_auipc_wenb", false,-1);
+        vcdp->declBit(c+1209,"top mem_lui_enb", false,-1);
+        vcdp->declBus(c+1217,"top pcplus4 pc", false,-1, 31,0);
         vcdp->declBus(c+697,"top pcplus4 pc_plus4", false,-1, 31,0);
-        vcdp->declBit(c+1641,"top fetch clk", false,-1);
-        vcdp->declBit(c+1649,"top fetch rst", false,-1);
+        vcdp->declBit(c+1657,"top fetch clk", false,-1);
+        vcdp->declBit(c+1665,"top fetch rst", false,-1);
         vcdp->declBus(c+561,"top fetch sel", false,-1, 1,0);
         vcdp->declBus(c+697,"top fetch pc_plus_4", false,-1, 31,0);
         vcdp->declBus(c+345,"top fetch pc_plus_imm", false,-1, 31,0);
@@ -223,14 +225,14 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBit(c+569,"top fetch stall", false,-1);
         vcdp->declBus(c+1,"top fetch instruction", false,-1, 31,0);
         vcdp->declBus(c+697,"top fetch pc_out", false,-1, 31,0);
-        vcdp->declBus(c+1201,"top fetch pc", false,-1, 31,0);
+        vcdp->declBus(c+1217,"top fetch pc", false,-1, 31,0);
         vcdp->declBus(c+553,"top fetch pc_next", false,-1, 31,0);
-        vcdp->declBit(c+1641,"top fetch PC clk", false,-1);
-        vcdp->declBit(c+1649,"top fetch PC rst", false,-1);
+        vcdp->declBit(c+1657,"top fetch PC clk", false,-1);
+        vcdp->declBit(c+1665,"top fetch PC rst", false,-1);
         vcdp->declBus(c+553,"top fetch PC pc_next", false,-1, 31,0);
         vcdp->declBit(c+681,"top fetch PC pc_write", false,-1);
-        vcdp->declBus(c+1201,"top fetch PC pc_out", false,-1, 31,0);
-        vcdp->declBus(c+1201,"top fetch IM addr", false,-1, 31,0);
+        vcdp->declBus(c+1217,"top fetch PC pc_out", false,-1, 31,0);
+        vcdp->declBus(c+1217,"top fetch IM addr", false,-1, 31,0);
         vcdp->declBus(c+1,"top fetch IM instruction", false,-1, 31,0);
         vcdp->declBus(c+561,"top fetch mux4 sel", false,-1, 1,0);
         vcdp->declBus(c+697,"top fetch mux4 pc_plus_4", false,-1, 31,0);
@@ -238,11 +240,11 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBus(c+721,"top fetch mux4 pc_plus_imm_2", false,-1, 31,0);
         vcdp->declBus(c+537,"top fetch mux4 rs1_plus_imm_for_jalr", false,-1, 31,0);
         vcdp->declBus(c+553,"top fetch mux4 out", false,-1, 31,0);
-        vcdp->declBit(c+1641,"top if_id clk", false,-1);
-        vcdp->declBit(c+1649,"top if_id rst", false,-1);
+        vcdp->declBit(c+1657,"top if_id clk", false,-1);
+        vcdp->declBit(c+1665,"top if_id rst", false,-1);
         vcdp->declBus(c+1,"top if_id instruction_in", false,-1, 31,0);
         vcdp->declBus(c+697,"top if_id pcplus4_in", false,-1, 31,0);
-        vcdp->declBus(c+1201,"top if_id current_pc_in", false,-1, 31,0);
+        vcdp->declBus(c+1217,"top if_id current_pc_in", false,-1, 31,0);
         vcdp->declBus(c+729,"top if_id instruction_out", false,-1, 31,0);
         vcdp->declBus(c+737,"top if_id pcplus4_out", false,-1, 31,0);
         vcdp->declBus(c+1073,"top if_id current_pc_out", false,-1, 31,0);
@@ -253,8 +255,8 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBus(c+753,"top decoder rs1", false,-1, 4,0);
         vcdp->declBus(c+761,"top decoder rs2", false,-1, 4,0);
         vcdp->declBus(c+769,"top decoder rdi", false,-1, 4,0);
-        vcdp->declBit(c+1641,"top regfile clk", false,-1);
-        vcdp->declBit(c+1649,"top regfile reset", false,-1);
+        vcdp->declBit(c+1657,"top regfile clk", false,-1);
+        vcdp->declBit(c+1665,"top regfile reset", false,-1);
         vcdp->declBit(c+1177,"top regfile enable", false,-1);
         vcdp->declBus(c+289,"top regfile data_in", false,-1, 31,0);
         vcdp->declBus(c+753,"top regfile rs1", false,-1, 4,0);
@@ -262,8 +264,8 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBus(c+777,"top regfile rd_select", false,-1, 4,0);
         vcdp->declBus(c+9,"top regfile data_out1", false,-1, 31,0);
         vcdp->declBus(c+817,"top regfile data_out2", false,-1, 31,0);
-        vcdp->declArray(c+1209,"top regfile registers", false,-1, 1023,0);
-        vcdp->declBus(c+1465,"top regfile i", false,-1, 31,0);
+        vcdp->declArray(c+1225,"top regfile registers", false,-1, 1023,0);
+        vcdp->declBus(c+1481,"top regfile i", false,-1, 31,0);
         vcdp->declBus(c+729,"top immediate_generator instruction", false,-1, 31,0);
         vcdp->declBus(c+17,"top immediate_generator imm", false,-1, 31,0);
         vcdp->declBus(c+401,"top immediate_generator sel", false,-1, 3,0);
@@ -322,19 +324,19 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBit(c+49,"top control_unit branch_enb", false,-1);
         vcdp->declBit(c+529,"top control_unit in_to_pr", false,-1);
         vcdp->declBit(c+657,"top control_unit store_enb", false,-1);
-        vcdp->declBus(c+1473,"top control_unit opcode", false,-1, 6,0);
-        vcdp->declBus(c+1481,"top control_unit funct3", false,-1, 2,0);
-        vcdp->declBus(c+1489,"top control_unit opcode_funct3", false,-1, 9,0);
-        vcdp->declBit(c+1497,"top control_unit i0", false,-1);
-        vcdp->declBit(c+1505,"top control_unit i1", false,-1);
-        vcdp->declBit(c+1513,"top control_unit i2", false,-1);
-        vcdp->declBit(c+1521,"top control_unit i3", false,-1);
-        vcdp->declBit(c+1529,"top control_unit i4", false,-1);
-        vcdp->declBit(c+1537,"top control_unit i5", false,-1);
-        vcdp->declBit(c+1545,"top control_unit i6", false,-1);
-        vcdp->declBit(c+1553,"top control_unit i7", false,-1);
-        vcdp->declBit(c+1561,"top control_unit i8", false,-1);
-        vcdp->declBus(c+1673,"top control_unit selected_bits", false,-1, 8,0);
+        vcdp->declBus(c+1489,"top control_unit opcode", false,-1, 6,0);
+        vcdp->declBus(c+1497,"top control_unit funct3", false,-1, 2,0);
+        vcdp->declBus(c+1505,"top control_unit opcode_funct3", false,-1, 9,0);
+        vcdp->declBit(c+1513,"top control_unit i0", false,-1);
+        vcdp->declBit(c+1521,"top control_unit i1", false,-1);
+        vcdp->declBit(c+1529,"top control_unit i2", false,-1);
+        vcdp->declBit(c+1537,"top control_unit i3", false,-1);
+        vcdp->declBit(c+1545,"top control_unit i4", false,-1);
+        vcdp->declBit(c+1553,"top control_unit i5", false,-1);
+        vcdp->declBit(c+1561,"top control_unit i6", false,-1);
+        vcdp->declBit(c+1569,"top control_unit i7", false,-1);
+        vcdp->declBit(c+1577,"top control_unit i8", false,-1);
+        vcdp->declBus(c+1689,"top control_unit selected_bits", false,-1, 8,0);
         vcdp->declBit(c+409,"top control_unit out0", false,-1);
         vcdp->declBit(c+417,"top control_unit out1", false,-1);
         vcdp->declBit(c+425,"top control_unit out2", false,-1);
@@ -357,8 +359,8 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBit(c+569,"top hazard_detction stall", false,-1);
         vcdp->declBit(c+577,"top hazard_detction flush", false,-1);
         vcdp->declBit(c+673,"top hazard_detction flush_for_if", false,-1);
-        vcdp->declBit(c+1641,"top id_ex clk", false,-1);
-        vcdp->declBit(c+1649,"top id_ex rst", false,-1);
+        vcdp->declBit(c+1657,"top id_ex clk", false,-1);
+        vcdp->declBit(c+1665,"top id_ex rst", false,-1);
         vcdp->declBus(c+25,"top id_ex alu_sel_in", false,-1, 3,0);
         vcdp->declBit(c+513,"top id_ex wenb_in", false,-1);
         vcdp->declBit(c+521,"top id_ex rs2_imm_sel_in", false,-1);
@@ -394,9 +396,9 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBit(c+865,"top id_ex branch_enb_out", false,-1);
         vcdp->declBit(c+873,"top id_ex lui_enb_out", false,-1);
         vcdp->declBit(c+881,"top id_ex auipc_wenb_out", false,-1);
-        vcdp->declBit(c+1577,"top id_ex sb_out", false,-1);
-        vcdp->declBit(c+1585,"top id_ex sh_out", false,-1);
-        vcdp->declBit(c+1593,"top id_ex sw_out", false,-1);
+        vcdp->declBit(c+1593,"top id_ex sb_out", false,-1);
+        vcdp->declBit(c+1601,"top id_ex sh_out", false,-1);
+        vcdp->declBit(c+1609,"top id_ex sw_out", false,-1);
         vcdp->declBit(c+929,"top id_ex store_enb_out", false,-1);
         vcdp->declBus(c+889,"top id_ex rs1_data_out", false,-1, 31,0);
         vcdp->declBus(c+897,"top id_ex rs2_data_out", false,-1, 31,0);
@@ -447,17 +449,19 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBus(c+649,"top mux_rs2 rs2", false,-1, 31,0);
         vcdp->declBus(c+689,"top mux_rs2 sel_bit", false,-1, 3,0);
         vcdp->declBus(c+617,"top mux_rs2 output_data_forstore", false,-1, 31,0);
-        vcdp->declBit(c+1641,"top ex_mem clk", false,-1);
-        vcdp->declBit(c+1649,"top ex_mem rst", false,-1);
+        vcdp->declBit(c+1657,"top ex_mem clk", false,-1);
+        vcdp->declBit(c+1665,"top ex_mem rst", false,-1);
         vcdp->declBus(c+1081,"top ex_mem jal_return_add_in", false,-1, 31,0);
         vcdp->declBus(c+561,"top ex_mem sel_bit_mux_in", false,-1, 1,0);
         vcdp->declBit(c+849,"top ex_mem wb_in", false,-1);
         vcdp->declBit(c+1129,"top ex_mem load_enb_in", false,-1);
-        vcdp->declBit(c+1577,"top ex_mem sb_in", false,-1);
-        vcdp->declBit(c+1585,"top ex_mem sh_in", false,-1);
-        vcdp->declBit(c+1593,"top ex_mem sw_in", false,-1);
+        vcdp->declBit(c+1593,"top ex_mem sb_in", false,-1);
+        vcdp->declBit(c+1601,"top ex_mem sh_in", false,-1);
+        vcdp->declBit(c+1609,"top ex_mem sw_in", false,-1);
         vcdp->declBit(c+929,"top ex_mem store_enb_in", false,-1);
         vcdp->declBit(c+841,"top ex_mem jal_enb_in", false,-1);
+        vcdp->declBit(c+881,"top ex_mem auipc_wenb_in", false,-1);
+        vcdp->declBit(c+873,"top ex_mem lui_enb_in", false,-1);
         vcdp->declBus(c+625,"top ex_mem alu_result_in", false,-1, 31,0);
         vcdp->declBus(c+617,"top ex_mem store_data_in", false,-1, 31,0);
         vcdp->declBus(c+721,"top ex_mem pc_plus_imm_in", false,-1, 31,0);
@@ -471,13 +475,13 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBit(c+1121,"top ex_mem lhu_in", false,-1);
         vcdp->declBit(c+969,"top ex_mem wb_out", false,-1);
         vcdp->declBit(c+977,"top ex_mem load_enb_out", false,-1);
-        vcdp->declBit(c+1601,"top ex_mem sb_out", false,-1);
-        vcdp->declBit(c+1609,"top ex_mem sh_out", false,-1);
-        vcdp->declBit(c+1617,"top ex_mem sw_out", false,-1);
+        vcdp->declBit(c+1617,"top ex_mem sb_out", false,-1);
+        vcdp->declBit(c+1625,"top ex_mem sh_out", false,-1);
+        vcdp->declBit(c+1633,"top ex_mem sw_out", false,-1);
         vcdp->declBit(c+921,"top ex_mem store_enb_out", false,-1);
         vcdp->declBit(c+745,"top ex_mem jal_enb_out", false,-1);
-        vcdp->declBus(c+1625,"top ex_mem alu_result_out", false,-1, 31,0);
-        vcdp->declBus(c+1633,"top ex_mem store_data_out", false,-1, 31,0);
+        vcdp->declBus(c+1641,"top ex_mem alu_result_out", false,-1, 31,0);
+        vcdp->declBus(c+1649,"top ex_mem store_data_out", false,-1, 31,0);
         vcdp->declBus(c+1009,"top ex_mem pc_plus_imm_out", false,-1, 31,0);
         vcdp->declBus(c+809,"top ex_mem rd_out", false,-1, 4,0);
         vcdp->declBus(c+1185,"top ex_mem rs1_out", false,-1, 4,0);
@@ -489,31 +493,33 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBit(c+1153,"top ex_mem lw_out", false,-1);
         vcdp->declBit(c+1161,"top ex_mem lbu_out", false,-1);
         vcdp->declBit(c+1169,"top ex_mem lhu_out", false,-1);
+        vcdp->declBit(c+1201,"top ex_mem auipc_wenb_out", false,-1);
+        vcdp->declBit(c+1209,"top ex_mem lui_enb_out", false,-1);
         vcdp->declBit(c+577,"top ex_mem flush", false,-1);
-        vcdp->declBit(c+1641,"top data_mem clk", false,-1);
+        vcdp->declBit(c+1657,"top data_mem clk", false,-1);
         vcdp->declBit(c+977,"top data_mem load_enb", false,-1);
-        vcdp->declBit(c+1601,"top data_mem sb", false,-1);
-        vcdp->declBit(c+1609,"top data_mem sh", false,-1);
-        vcdp->declBit(c+1617,"top data_mem sw", false,-1);
+        vcdp->declBit(c+1617,"top data_mem sb", false,-1);
+        vcdp->declBit(c+1625,"top data_mem sh", false,-1);
+        vcdp->declBit(c+1633,"top data_mem sw", false,-1);
         vcdp->declBit(c+1137,"top data_mem lb", false,-1);
         vcdp->declBit(c+1145,"top data_mem lh", false,-1);
         vcdp->declBit(c+1153,"top data_mem lw", false,-1);
         vcdp->declBit(c+1161,"top data_mem lbu", false,-1);
         vcdp->declBit(c+1169,"top data_mem lhu", false,-1);
-        vcdp->declBus(c+1625,"top data_mem address", false,-1, 31,0);
-        vcdp->declBus(c+1633,"top data_mem write_data", false,-1, 31,0);
+        vcdp->declBus(c+1641,"top data_mem address", false,-1, 31,0);
+        vcdp->declBus(c+1649,"top data_mem write_data", false,-1, 31,0);
         vcdp->declBus(c+665,"top data_mem read_data", false,-1, 31,0);
-        vcdp->declBit(c+1641,"top mem_wb clk", false,-1);
-        vcdp->declBit(c+1649,"top mem_wb rst", false,-1);
+        vcdp->declBit(c+1657,"top mem_wb clk", false,-1);
+        vcdp->declBit(c+1665,"top mem_wb rst", false,-1);
         vcdp->declBus(c+713,"top mem_wb sel_bit_mux_in", false,-1, 1,0);
         vcdp->declBus(c+1025,"top mem_wb jal_return_add_in", false,-1, 31,0);
         vcdp->declBit(c+969,"top mem_wb wenb_in", false,-1);
         vcdp->declBit(c+977,"top mem_wb load_enb_in", false,-1);
         vcdp->declBit(c+745,"top mem_wb jal_enb_in", false,-1);
-        vcdp->declBit(c+873,"top mem_wb lui_enb_in", false,-1);
-        vcdp->declBit(c+881,"top mem_wb auipc_wenb_in", false,-1);
+        vcdp->declBit(c+1209,"top mem_wb lui_enb_in", false,-1);
+        vcdp->declBit(c+1201,"top mem_wb auipc_wenb_in", false,-1);
         vcdp->declBus(c+665,"top mem_wb mem_data_in", false,-1, 31,0);
-        vcdp->declBus(c+1625,"top mem_wb alu_result_in", false,-1, 31,0);
+        vcdp->declBus(c+1641,"top mem_wb alu_result_in", false,-1, 31,0);
         vcdp->declBus(c+913,"top mem_wb pcplus4_in", false,-1, 31,0);
         vcdp->declBus(c+1009,"top mem_wb pc_plus_imm_in", false,-1, 31,0);
         vcdp->declBus(c+809,"top mem_wb rd_in", false,-1, 4,0);
@@ -535,7 +541,7 @@ void Vtop::traceInitThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->declBit(c+961,"top priority_encoder_8to3 enable_for_auipc", false,-1);
         vcdp->declBit(c+953,"top priority_encoder_8to3 lui_enable", false,-1);
         vcdp->declBus(c+337,"top priority_encoder_8to3 sel", false,-1, 2,0);
-        vcdp->declBus(c+1569,"top priority_encoder_8to3 input_concat", false,-1, 4,0);
+        vcdp->declBus(c+1585,"top priority_encoder_8to3 input_concat", false,-1, 4,0);
         vcdp->declBus(c+993,"top mux8to1 alu_result", false,-1, 31,0);
         vcdp->declBus(c+985,"top mux8to1 load_result", false,-1, 31,0);
         vcdp->declBus(c+1033,"top mux8to1 pc_plus_4", false,-1, 31,0);
@@ -663,7 +669,7 @@ void Vtop::traceFullThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
                                    ? 0U : vlTOPp->top__DOT__regfile__DOT__registers[
                                   (0x1fU & (vlTOPp->top__DOT__id_instruction 
                                             >> 0x14U))]))),32);
-        vcdp->fullBus(c+337,(vlTOPp->top__DOT__wb_mux_sel),3);
+        vcdp->fullBus(c+337,(vlTOPp->top__DOT__pri_enc_sel),3);
         vcdp->fullBus(c+345,((vlTOPp->top__DOT__if_current_pc 
                               + vlTOPp->top__DOT__id_imm)),32);
         vcdp->fullBit(c+353,(vlTOPp->top__DOT__id_lb));
@@ -918,35 +924,37 @@ void Vtop::traceFullThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
         vcdp->fullBit(c+1177,(vlTOPp->top__DOT__wb_wenb));
         vcdp->fullBus(c+1185,(vlTOPp->top__DOT__mem_rs1),5);
         vcdp->fullBus(c+1193,(vlTOPp->top__DOT__mem_rs2),5);
-        vcdp->fullBus(c+1201,(vlTOPp->top__DOT__fetch__DOT__pc),32);
-        vcdp->fullArray(c+1209,(vlTOPp->top__DOT__regfile__DOT__registers),1024);
-        vcdp->fullBus(c+1465,(vlTOPp->top__DOT__regfile__DOT__i),32);
-        vcdp->fullBus(c+1473,((0x7fU & vlTOPp->top__DOT__id_instruction)),7);
-        vcdp->fullBus(c+1481,((7U & (vlTOPp->top__DOT__id_instruction 
+        vcdp->fullBit(c+1201,(vlTOPp->top__DOT__mem_auipc_wenb));
+        vcdp->fullBit(c+1209,(vlTOPp->top__DOT__mem_lui_enb));
+        vcdp->fullBus(c+1217,(vlTOPp->top__DOT__fetch__DOT__pc),32);
+        vcdp->fullArray(c+1225,(vlTOPp->top__DOT__regfile__DOT__registers),1024);
+        vcdp->fullBus(c+1481,(vlTOPp->top__DOT__regfile__DOT__i),32);
+        vcdp->fullBus(c+1489,((0x7fU & vlTOPp->top__DOT__id_instruction)),7);
+        vcdp->fullBus(c+1497,((7U & (vlTOPp->top__DOT__id_instruction 
                                      >> 0xcU))),3);
-        vcdp->fullBus(c+1489,(((0x3f8U & (vlTOPp->top__DOT__id_instruction 
+        vcdp->fullBus(c+1505,(((0x3f8U & (vlTOPp->top__DOT__id_instruction 
                                           << 3U)) | 
                                (7U & (vlTOPp->top__DOT__id_instruction 
                                       >> 0xcU)))),10);
-        vcdp->fullBit(c+1497,((1U & (vlTOPp->top__DOT__id_instruction 
-                                     >> 2U))));
-        vcdp->fullBit(c+1505,((1U & (vlTOPp->top__DOT__id_instruction 
-                                     >> 3U))));
         vcdp->fullBit(c+1513,((1U & (vlTOPp->top__DOT__id_instruction 
-                                     >> 4U))));
+                                     >> 2U))));
         vcdp->fullBit(c+1521,((1U & (vlTOPp->top__DOT__id_instruction 
-                                     >> 5U))));
+                                     >> 3U))));
         vcdp->fullBit(c+1529,((1U & (vlTOPp->top__DOT__id_instruction 
-                                     >> 6U))));
+                                     >> 4U))));
         vcdp->fullBit(c+1537,((1U & (vlTOPp->top__DOT__id_instruction 
-                                     >> 0xcU))));
+                                     >> 5U))));
         vcdp->fullBit(c+1545,((1U & (vlTOPp->top__DOT__id_instruction 
-                                     >> 0xdU))));
+                                     >> 6U))));
         vcdp->fullBit(c+1553,((1U & (vlTOPp->top__DOT__id_instruction 
-                                     >> 0xeU))));
+                                     >> 0xcU))));
         vcdp->fullBit(c+1561,((1U & (vlTOPp->top__DOT__id_instruction 
+                                     >> 0xdU))));
+        vcdp->fullBit(c+1569,((1U & (vlTOPp->top__DOT__id_instruction 
+                                     >> 0xeU))));
+        vcdp->fullBit(c+1577,((1U & (vlTOPp->top__DOT__id_instruction 
                                      >> 0x1eU))));
-        vcdp->fullBus(c+1569,((((IData)(vlTOPp->top__DOT__wb_lui_enb) 
+        vcdp->fullBus(c+1585,((((IData)(vlTOPp->top__DOT__wb_lui_enb) 
                                 << 4U) | (((IData)(vlTOPp->top__DOT__wb_auipc_wenb) 
                                            << 3U) | 
                                           (((IData)(vlTOPp->top__DOT__wb_jal_enb) 
@@ -959,18 +967,18 @@ void Vtop::traceFullThis__1(Vtop__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, 
                                                        | (IData)(vlTOPp->top__DOT__wb_auipc_wenb)) 
                                                       | (IData)(vlTOPp->top__DOT__wb_jal_enb)) 
                                                      | (IData)(vlTOPp->top__DOT__wb_load_enb))))))))),5);
-        vcdp->fullBit(c+1577,(vlTOPp->top__DOT__ex_sb));
-        vcdp->fullBit(c+1585,(vlTOPp->top__DOT__ex_sh));
-        vcdp->fullBit(c+1593,(vlTOPp->top__DOT__ex_sw));
-        vcdp->fullBit(c+1601,(vlTOPp->top__DOT__mem_sb));
-        vcdp->fullBit(c+1609,(vlTOPp->top__DOT__mem_sh));
-        vcdp->fullBit(c+1617,(vlTOPp->top__DOT__mem_sw));
-        vcdp->fullBus(c+1625,(vlTOPp->top__DOT__mem_alu_result),32);
-        vcdp->fullBus(c+1633,(vlTOPp->top__DOT__mem_store_data),32);
-        vcdp->fullBit(c+1641,(vlTOPp->clk));
-        vcdp->fullBit(c+1649,(vlTOPp->rst));
-        vcdp->fullBus(c+1657,(vlTOPp->top__DOT__ex_rs1_plus_imm_for_jalr),32);
-        vcdp->fullBus(c+1665,(vlTOPp->top__DOT__ex_current_pc),32);
-        vcdp->fullBus(c+1673,(vlTOPp->top__DOT__control_unit__DOT__selected_bits),9);
+        vcdp->fullBit(c+1593,(vlTOPp->top__DOT__ex_sb));
+        vcdp->fullBit(c+1601,(vlTOPp->top__DOT__ex_sh));
+        vcdp->fullBit(c+1609,(vlTOPp->top__DOT__ex_sw));
+        vcdp->fullBit(c+1617,(vlTOPp->top__DOT__mem_sb));
+        vcdp->fullBit(c+1625,(vlTOPp->top__DOT__mem_sh));
+        vcdp->fullBit(c+1633,(vlTOPp->top__DOT__mem_sw));
+        vcdp->fullBus(c+1641,(vlTOPp->top__DOT__mem_alu_result),32);
+        vcdp->fullBus(c+1649,(vlTOPp->top__DOT__mem_store_data),32);
+        vcdp->fullBit(c+1657,(vlTOPp->clk));
+        vcdp->fullBit(c+1665,(vlTOPp->rst));
+        vcdp->fullBus(c+1673,(vlTOPp->top__DOT__ex_rs1_plus_imm_for_jalr),32);
+        vcdp->fullBus(c+1681,(vlTOPp->top__DOT__ex_current_pc),32);
+        vcdp->fullBus(c+1689,(vlTOPp->top__DOT__control_unit__DOT__selected_bits),9);
     }
 }

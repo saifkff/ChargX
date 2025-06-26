@@ -22,7 +22,7 @@ module top (
     wire [1:0] forward_a,forward_b;
     wire [31:0] mem_alu_result,mem_store_data,mem_read_data,wb_mem_data,wb_alu_result;
     wire [31:0] wb_pcplus4,id_pc_plus_imm,id_rs1_forwarded,id_rs2_forwarded,mem_pc_plus_imm,wb_pc_plus_imm;
-    wire [2:0] wb_mux_sel;
+    wire [2:0] pri_enc_sel;
     wire [31:0] jal_jump_target,jal_return_add,mem_jal_return_add,wb_jal_return_add;
     wire flush_for_if,alu_result_pri_enc,id_lb,id_lh,id_lhu,id_lbu,id_lw;
     wire [31:0] id_rs1_plus_imm_for_jalr,id_rs1_forwarded_for_jalr ;
@@ -32,6 +32,7 @@ module top (
     wire mem_lb, mem_lh, mem_lw, mem_lbu, mem_lhu, wb_wenb;
     wire [4:0] mem_rs1, mem_rs2 ;
     wire [31:0] id_auipc_pc_plus_imm;
+    wire mem_auipc_wenb, mem_lui_enb;
 
     pc_plus_4 pcplus4(
         .pc(fetch.PC.pc_out),
@@ -212,7 +213,9 @@ module top (
         .lbu_in(ex_lbu), .lhu_in(ex_lhu),
         .lb_out(mem_lb), .lh_out(mem_lh), .lw_out(mem_lw),
         .lbu_out(mem_lbu), .lhu_out(mem_lhu),
-        .rs1_out(mem_rs1), .rs2_out(mem_rs2)
+        .rs1_out(mem_rs1), .rs2_out(mem_rs2),
+        .auipc_wenb_in(ex_auipc_wenb), .auipc_wenb_out(mem_auipc_wenb),
+        .lui_enb_in(ex_lui_enb), .lui_enb_out(mem_lui_enb)
     );
     data_mem data_mem(
         .clk(clk),.load_enb(mem_load_enb),.sb(mem_sb),.sh(mem_sh),.sw(mem_sw),
@@ -225,8 +228,8 @@ module top (
         .rst(rst),
         .load_enb_in(mem_load_enb),.wenb_in(mem_wenb),
         .jal_enb_in(mem_jal_enb), .pc_plus_imm_in(mem_pc_plus_imm),.pc_plus_imm_out(wb_pc_plus_imm),
-        .lui_enb_in(ex_lui_enb),.sel_bit_mux_in(mem_sel_bit_mux),.sel_bit_mux_out(wb_sel_bit_mux),
-        .auipc_wenb_in(ex_auipc_wenb),
+        .lui_enb_in(mem_lui_enb),.sel_bit_mux_in(mem_sel_bit_mux),.sel_bit_mux_out(wb_sel_bit_mux),
+        .auipc_wenb_in(mem_auipc_wenb),
         .mem_data_in(mem_read_data),.alu_result_in(mem_alu_result),
         .pcplus4_in(ex_pcplus4),.rd_in(mem_rd),
         .load_enb_out(wb_load_enb),
@@ -241,13 +244,13 @@ module top (
     priority_encoder_8to3 priority_encoder_8to3(
         .alu_result(alu_result_pri_enc),.load_enable(wb_load_enb),.jal_enb(wb_jal_enb),
         .enable_for_auipc(wb_auipc_wenb),.lui_enable(wb_lui_enb),
-        .sel(wb_mux_sel)
+        .sel(pri_enc_sel)
     );
     assign alu_result_pri_enc = ~(wb_lui_enb | wb_auipc_wenb | wb_jal_enb | wb_load_enb);
     mux8to1 mux8to1(
         .alu_result(wb_alu_result),.load_result(wb_mem_data),
         .pc_plus_4(wb_jal_return_add),.pc_plus_imm(wb_pc_plus_imm),
-        .imm_for_b_type(ex_imm),.sel(wb_mux_sel),.out(wb_data)
+        .imm_for_b_type(ex_imm),.sel(pri_enc_sel),.out(wb_data)
     );
 
 endmodule

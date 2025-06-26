@@ -7,7 +7,7 @@
 
 //==========
 CData/*1:0*/ Vtop::__Vtable1_top__DOT__ex_sel_bit_mux[16];
-CData/*2:0*/ Vtop::__Vtable2_top__DOT__wb_mux_sel[32];
+CData/*2:0*/ Vtop::__Vtable2_top__DOT__pri_enc_sel[32];
 
 VL_CTOR_IMP(Vtop) {
     Vtop__Syms* __restrict vlSymsp = __VlSymsp = new Vtop__Syms(this, name());
@@ -229,9 +229,9 @@ VL_INLINE_OPT void Vtop::_sequent__TOP__1(Vtop__Syms* __restrict vlSymsp) {
     vlTOPp->top__DOT__wb_alu_result = ((IData)(vlTOPp->rst)
                                         ? 0U : vlTOPp->top__DOT__mem_alu_result);
     vlTOPp->top__DOT__wb_lui_enb = ((~ (IData)(vlTOPp->rst)) 
-                                    & (IData)(vlTOPp->top__DOT__ex_lui_enb));
+                                    & (IData)(vlTOPp->top__DOT__mem_lui_enb));
     vlTOPp->top__DOT__wb_auipc_wenb = ((~ (IData)(vlTOPp->rst)) 
-                                       & (IData)(vlTOPp->top__DOT__ex_auipc_wenb));
+                                       & (IData)(vlTOPp->top__DOT__mem_auipc_wenb));
     vlTOPp->top__DOT__wb_jal_enb = ((~ (IData)(vlTOPp->rst)) 
                                     & (IData)(vlTOPp->top__DOT__mem_jal_enb));
     vlTOPp->top__DOT__wb_load_enb = ((~ (IData)(vlTOPp->rst)) 
@@ -364,20 +364,10 @@ VL_INLINE_OPT void Vtop::_sequent__TOP__1(Vtop__Syms* __restrict vlSymsp) {
                                                  >> 0x14U));
         }
     }
-    if (((IData)(vlTOPp->rst) | (IData)(vlTOPp->top__DOT__flush))) {
-        vlTOPp->top__DOT__ex_lui_enb = 0U;
-    } else {
-        if ((1U & (~ (IData)(vlTOPp->top__DOT__stall)))) {
-            vlTOPp->top__DOT__ex_lui_enb = vlTOPp->top__DOT__id_lui_enb;
-        }
-    }
-    if (((IData)(vlTOPp->rst) | (IData)(vlTOPp->top__DOT__flush))) {
-        vlTOPp->top__DOT__ex_auipc_wenb = 0U;
-    } else {
-        if ((1U & (~ (IData)(vlTOPp->top__DOT__stall)))) {
-            vlTOPp->top__DOT__ex_auipc_wenb = vlTOPp->top__DOT__id_auipc_wenb;
-        }
-    }
+    vlTOPp->top__DOT__mem_lui_enb = ((~ (IData)(vlTOPp->rst)) 
+                                     & (IData)(vlTOPp->top__DOT__ex_lui_enb));
+    vlTOPp->top__DOT__mem_auipc_wenb = ((~ (IData)(vlTOPp->rst)) 
+                                        & (IData)(vlTOPp->top__DOT__ex_auipc_wenb));
     vlTOPp->top__DOT__mem_jal_enb = ((~ (IData)(vlTOPp->rst)) 
                                      & (IData)(vlTOPp->top__DOT__ex_jal_enb));
     vlTOPp->top__DOT__mem_load_enb = ((~ (IData)(vlTOPp->rst)) 
@@ -394,7 +384,7 @@ VL_INLINE_OPT void Vtop::_sequent__TOP__1(Vtop__Syms* __restrict vlSymsp) {
                                                               | (IData)(vlTOPp->top__DOT__wb_auipc_wenb)) 
                                                              | (IData)(vlTOPp->top__DOT__wb_jal_enb)) 
                                                             | (IData)(vlTOPp->top__DOT__wb_load_enb))))))));
-    vlTOPp->top__DOT__wb_mux_sel = vlTOPp->__Vtable2_top__DOT__wb_mux_sel
+    vlTOPp->top__DOT__pri_enc_sel = vlTOPp->__Vtable2_top__DOT__pri_enc_sel
         [vlTOPp->__Vtableidx2];
     if (vlTOPp->rst) {
         vlTOPp->top__DOT__regfile__DOT__registers[0U] = 0U;
@@ -436,16 +426,16 @@ VL_INLINE_OPT void Vtop::_sequent__TOP__1(Vtop__Syms* __restrict vlSymsp) {
                                             << 5U)), vlTOPp->top__DOT__regfile__DOT__registers, vlTOPp->top__DOT__wb_data);
         }
     }
-    vlTOPp->top__DOT__wb_data = ((4U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
-                                  ? ((2U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
-                                      ? 0U : ((1U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
+    vlTOPp->top__DOT__wb_data = ((4U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
+                                  ? ((2U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
+                                      ? 0U : ((1U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
                                                ? 0U
                                                : vlTOPp->top__DOT__ex_imm))
-                                  : ((2U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
-                                      ? ((1U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
+                                  : ((2U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
+                                      ? ((1U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
                                           ? vlTOPp->top__DOT__wb_pc_plus_imm
                                           : vlTOPp->top__DOT__wb_jal_return_add)
-                                      : ((1U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
+                                      : ((1U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
                                           ? vlTOPp->top__DOT__wb_mem_data
                                           : vlTOPp->top__DOT__wb_alu_result)));
     if (((IData)(vlTOPp->rst) | (IData)(vlTOPp->top__DOT__flush))) {
@@ -461,6 +451,20 @@ VL_INLINE_OPT void Vtop::_sequent__TOP__1(Vtop__Syms* __restrict vlSymsp) {
         if ((1U & (~ (IData)(vlTOPp->top__DOT__stall)))) {
             vlTOPp->top__DOT__ex_pc_plus_imm = (vlTOPp->top__DOT__id_pcplus4 
                                                 + vlTOPp->top__DOT__id_imm);
+        }
+    }
+    if (((IData)(vlTOPp->rst) | (IData)(vlTOPp->top__DOT__flush))) {
+        vlTOPp->top__DOT__ex_lui_enb = 0U;
+    } else {
+        if ((1U & (~ (IData)(vlTOPp->top__DOT__stall)))) {
+            vlTOPp->top__DOT__ex_lui_enb = vlTOPp->top__DOT__id_lui_enb;
+        }
+    }
+    if (((IData)(vlTOPp->rst) | (IData)(vlTOPp->top__DOT__flush))) {
+        vlTOPp->top__DOT__ex_auipc_wenb = 0U;
+    } else {
+        if ((1U & (~ (IData)(vlTOPp->top__DOT__stall)))) {
+            vlTOPp->top__DOT__ex_auipc_wenb = vlTOPp->top__DOT__id_auipc_wenb;
         }
     }
     if (((IData)(vlTOPp->rst) | (IData)(vlTOPp->top__DOT__flush))) {
@@ -1569,142 +1573,26 @@ void Vtop::_settle__TOP__3(Vtop__Syms* __restrict vlSymsp) {
                                                               | (IData)(vlTOPp->top__DOT__wb_auipc_wenb)) 
                                                              | (IData)(vlTOPp->top__DOT__wb_jal_enb)) 
                                                             | (IData)(vlTOPp->top__DOT__wb_load_enb))))))));
-    vlTOPp->top__DOT__wb_mux_sel = vlTOPp->__Vtable2_top__DOT__wb_mux_sel
+    vlTOPp->top__DOT__pri_enc_sel = vlTOPp->__Vtable2_top__DOT__pri_enc_sel
         [vlTOPp->__Vtableidx2];
-    if (vlTOPp->top__DOT__mem_lb) {
-        vlTOPp->top__DOT__mem_read_data = ((0xffffff00U 
-                                            & (VL_NEGATE_I((IData)(
-                                                                   (1U 
-                                                                    & (((0x1000U 
-                                                                         >= 
-                                                                         (0x1fffU 
-                                                                          & vlTOPp->top__DOT__mem_alu_result))
-                                                                         ? 
-                                                                        vlTOPp->top__DOT__data_mem__DOT__memory
-                                                                        [
-                                                                        (0x1fffU 
-                                                                         & vlTOPp->top__DOT__mem_alu_result)]
-                                                                         : 0U) 
-                                                                       >> 7U)))) 
-                                               << 8U)) 
-                                           | ((0x1000U 
-                                               >= (0x1fffU 
-                                                   & vlTOPp->top__DOT__mem_alu_result))
-                                               ? vlTOPp->top__DOT__data_mem__DOT__memory
-                                              [(0x1fffU 
-                                                & vlTOPp->top__DOT__mem_alu_result)]
-                                               : 0U));
-    } else {
-        if (vlTOPp->top__DOT__mem_lh) {
-            vlTOPp->top__DOT__mem_read_data = ((0xffff0000U 
+    vlTOPp->top__DOT__mem_read_data = ((IData)(vlTOPp->top__DOT__mem_load_enb)
+                                        ? ((IData)(vlTOPp->top__DOT__mem_lb)
+                                            ? ((0xffffff00U 
                                                 & (VL_NEGATE_I((IData)(
                                                                        (1U 
                                                                         & (((0x1000U 
                                                                              >= 
                                                                              (0x1fffU 
-                                                                              & ((IData)(1U) 
-                                                                                + vlTOPp->top__DOT__mem_alu_result)))
+                                                                              & vlTOPp->top__DOT__mem_alu_result))
                                                                              ? 
                                                                             vlTOPp->top__DOT__data_mem__DOT__memory
                                                                             [
                                                                             (0x1fffU 
-                                                                             & ((IData)(1U) 
-                                                                                + vlTOPp->top__DOT__mem_alu_result))]
+                                                                             & vlTOPp->top__DOT__mem_alu_result)]
                                                                              : 0U) 
                                                                            >> 7U)))) 
-                                                   << 0x10U)) 
-                                               | ((((0x1000U 
-                                                     >= 
-                                                     (0x1fffU 
-                                                      & ((IData)(1U) 
-                                                         + vlTOPp->top__DOT__mem_alu_result)))
-                                                     ? 
-                                                    vlTOPp->top__DOT__data_mem__DOT__memory
-                                                    [
-                                                    (0x1fffU 
-                                                     & ((IData)(1U) 
-                                                        + vlTOPp->top__DOT__mem_alu_result))]
-                                                     : 0U) 
-                                                   << 8U) 
-                                                  | ((0x1000U 
-                                                      >= 
-                                                      (0x1fffU 
-                                                       & vlTOPp->top__DOT__mem_alu_result))
-                                                      ? 
-                                                     vlTOPp->top__DOT__data_mem__DOT__memory
-                                                     [
-                                                     (0x1fffU 
-                                                      & vlTOPp->top__DOT__mem_alu_result)]
-                                                      : 0U)));
-        } else {
-            if (vlTOPp->top__DOT__mem_lw) {
-                vlTOPp->top__DOT__mem_read_data = (
-                                                   (((0x1000U 
-                                                      >= 
-                                                      (0x1fffU 
-                                                       & ((IData)(3U) 
-                                                          + vlTOPp->top__DOT__mem_alu_result)))
-                                                      ? 
-                                                     vlTOPp->top__DOT__data_mem__DOT__memory
-                                                     [
-                                                     (0x1fffU 
-                                                      & ((IData)(3U) 
-                                                         + vlTOPp->top__DOT__mem_alu_result))]
-                                                      : 0U) 
-                                                    << 0x18U) 
-                                                   | ((((0x1000U 
-                                                         >= 
-                                                         (0x1fffU 
-                                                          & ((IData)(2U) 
-                                                             + vlTOPp->top__DOT__mem_alu_result)))
-                                                         ? 
-                                                        vlTOPp->top__DOT__data_mem__DOT__memory
-                                                        [
-                                                        (0x1fffU 
-                                                         & ((IData)(2U) 
-                                                            + vlTOPp->top__DOT__mem_alu_result))]
-                                                         : 0U) 
-                                                       << 0x10U) 
-                                                      | ((((0x1000U 
-                                                            >= 
-                                                            (0x1fffU 
-                                                             & ((IData)(1U) 
-                                                                + vlTOPp->top__DOT__mem_alu_result)))
-                                                            ? 
-                                                           vlTOPp->top__DOT__data_mem__DOT__memory
-                                                           [
-                                                           (0x1fffU 
-                                                            & ((IData)(1U) 
-                                                               + vlTOPp->top__DOT__mem_alu_result))]
-                                                            : 0U) 
-                                                          << 8U) 
-                                                         | ((0x1000U 
-                                                             >= 
-                                                             (0x1fffU 
-                                                              & vlTOPp->top__DOT__mem_alu_result))
-                                                             ? 
-                                                            vlTOPp->top__DOT__data_mem__DOT__memory
-                                                            [
-                                                            (0x1fffU 
-                                                             & vlTOPp->top__DOT__mem_alu_result)]
-                                                             : 0U))));
-            } else {
-                if (vlTOPp->top__DOT__mem_lbu) {
-                    vlTOPp->top__DOT__mem_read_data 
-                        = ((0x1000U >= (0x1fffU & vlTOPp->top__DOT__mem_alu_result))
-                            ? vlTOPp->top__DOT__data_mem__DOT__memory
-                           [(0x1fffU & vlTOPp->top__DOT__mem_alu_result)]
-                            : 0U);
-                } else {
-                    if (vlTOPp->top__DOT__mem_lhu) {
-                        vlTOPp->top__DOT__mem_read_data 
-                            = ((((0x1000U >= (0x1fffU 
-                                              & ((IData)(1U) 
-                                                 + vlTOPp->top__DOT__mem_alu_result)))
-                                  ? vlTOPp->top__DOT__data_mem__DOT__memory
-                                 [(0x1fffU & ((IData)(1U) 
-                                              + vlTOPp->top__DOT__mem_alu_result))]
-                                  : 0U) << 8U) | ((0x1000U 
+                                                   << 8U)) 
+                                               | ((0x1000U 
                                                    >= 
                                                    (0x1fffU 
                                                     & vlTOPp->top__DOT__mem_alu_result))
@@ -1713,12 +1601,141 @@ void Vtop::_settle__TOP__3(Vtop__Syms* __restrict vlSymsp) {
                                                   [
                                                   (0x1fffU 
                                                    & vlTOPp->top__DOT__mem_alu_result)]
-                                                   : 0U));
-                    }
-                }
-            }
-        }
-    }
+                                                   : 0U))
+                                            : ((IData)(vlTOPp->top__DOT__mem_lh)
+                                                ? (
+                                                   (0xffff0000U 
+                                                    & (VL_NEGATE_I((IData)(
+                                                                           (1U 
+                                                                            & (((0x1000U 
+                                                                                >= 
+                                                                                (0x1fffU 
+                                                                                & ((IData)(1U) 
+                                                                                + vlTOPp->top__DOT__mem_alu_result)))
+                                                                                 ? 
+                                                                                vlTOPp->top__DOT__data_mem__DOT__memory
+                                                                                [
+                                                                                (0x1fffU 
+                                                                                & ((IData)(1U) 
+                                                                                + vlTOPp->top__DOT__mem_alu_result))]
+                                                                                 : 0U) 
+                                                                               >> 7U)))) 
+                                                       << 0x10U)) 
+                                                   | ((((0x1000U 
+                                                         >= 
+                                                         (0x1fffU 
+                                                          & ((IData)(1U) 
+                                                             + vlTOPp->top__DOT__mem_alu_result)))
+                                                         ? 
+                                                        vlTOPp->top__DOT__data_mem__DOT__memory
+                                                        [
+                                                        (0x1fffU 
+                                                         & ((IData)(1U) 
+                                                            + vlTOPp->top__DOT__mem_alu_result))]
+                                                         : 0U) 
+                                                       << 8U) 
+                                                      | ((0x1000U 
+                                                          >= 
+                                                          (0x1fffU 
+                                                           & vlTOPp->top__DOT__mem_alu_result))
+                                                          ? 
+                                                         vlTOPp->top__DOT__data_mem__DOT__memory
+                                                         [
+                                                         (0x1fffU 
+                                                          & vlTOPp->top__DOT__mem_alu_result)]
+                                                          : 0U)))
+                                                : ((IData)(vlTOPp->top__DOT__mem_lw)
+                                                    ? 
+                                                   ((((0x1000U 
+                                                       >= 
+                                                       (0x1fffU 
+                                                        & ((IData)(3U) 
+                                                           + vlTOPp->top__DOT__mem_alu_result)))
+                                                       ? 
+                                                      vlTOPp->top__DOT__data_mem__DOT__memory
+                                                      [
+                                                      (0x1fffU 
+                                                       & ((IData)(3U) 
+                                                          + vlTOPp->top__DOT__mem_alu_result))]
+                                                       : 0U) 
+                                                     << 0x18U) 
+                                                    | ((((0x1000U 
+                                                          >= 
+                                                          (0x1fffU 
+                                                           & ((IData)(2U) 
+                                                              + vlTOPp->top__DOT__mem_alu_result)))
+                                                          ? 
+                                                         vlTOPp->top__DOT__data_mem__DOT__memory
+                                                         [
+                                                         (0x1fffU 
+                                                          & ((IData)(2U) 
+                                                             + vlTOPp->top__DOT__mem_alu_result))]
+                                                          : 0U) 
+                                                        << 0x10U) 
+                                                       | ((((0x1000U 
+                                                             >= 
+                                                             (0x1fffU 
+                                                              & ((IData)(1U) 
+                                                                 + vlTOPp->top__DOT__mem_alu_result)))
+                                                             ? 
+                                                            vlTOPp->top__DOT__data_mem__DOT__memory
+                                                            [
+                                                            (0x1fffU 
+                                                             & ((IData)(1U) 
+                                                                + vlTOPp->top__DOT__mem_alu_result))]
+                                                             : 0U) 
+                                                           << 8U) 
+                                                          | ((0x1000U 
+                                                              >= 
+                                                              (0x1fffU 
+                                                               & vlTOPp->top__DOT__mem_alu_result))
+                                                              ? 
+                                                             vlTOPp->top__DOT__data_mem__DOT__memory
+                                                             [
+                                                             (0x1fffU 
+                                                              & vlTOPp->top__DOT__mem_alu_result)]
+                                                              : 0U))))
+                                                    : 
+                                                   ((IData)(vlTOPp->top__DOT__mem_lbu)
+                                                     ? 
+                                                    ((0x1000U 
+                                                      >= 
+                                                      (0x1fffU 
+                                                       & vlTOPp->top__DOT__mem_alu_result))
+                                                      ? 
+                                                     vlTOPp->top__DOT__data_mem__DOT__memory
+                                                     [
+                                                     (0x1fffU 
+                                                      & vlTOPp->top__DOT__mem_alu_result)]
+                                                      : 0U)
+                                                     : 
+                                                    ((IData)(vlTOPp->top__DOT__mem_lhu)
+                                                      ? 
+                                                     ((((0x1000U 
+                                                         >= 
+                                                         (0x1fffU 
+                                                          & ((IData)(1U) 
+                                                             + vlTOPp->top__DOT__mem_alu_result)))
+                                                         ? 
+                                                        vlTOPp->top__DOT__data_mem__DOT__memory
+                                                        [
+                                                        (0x1fffU 
+                                                         & ((IData)(1U) 
+                                                            + vlTOPp->top__DOT__mem_alu_result))]
+                                                         : 0U) 
+                                                       << 8U) 
+                                                      | ((0x1000U 
+                                                          >= 
+                                                          (0x1fffU 
+                                                           & vlTOPp->top__DOT__mem_alu_result))
+                                                          ? 
+                                                         vlTOPp->top__DOT__data_mem__DOT__memory
+                                                         [
+                                                         (0x1fffU 
+                                                          & vlTOPp->top__DOT__mem_alu_result)]
+                                                          : 0U))
+                                                      : 0U)))))
+                                        : 0U);
     vlTOPp->top__DOT____Vcellinp__mux_rs2__sel_bit 
         = (((IData)(vlTOPp->top__DOT__ex_sb) << 3U) 
            | (((IData)(vlTOPp->top__DOT__ex_sh) << 2U) 
@@ -2506,16 +2523,16 @@ void Vtop::_settle__TOP__3(Vtop__Syms* __restrict vlSymsp) {
                                               >> 0xeU))) 
                                        & (~ (vlTOPp->top__DOT__id_instruction 
                                              >> 0x1eU))));
-    vlTOPp->top__DOT__wb_data = ((4U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
-                                  ? ((2U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
-                                      ? 0U : ((1U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
+    vlTOPp->top__DOT__wb_data = ((4U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
+                                  ? ((2U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
+                                      ? 0U : ((1U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
                                                ? 0U
                                                : vlTOPp->top__DOT__ex_imm))
-                                  : ((2U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
-                                      ? ((1U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
+                                  : ((2U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
+                                      ? ((1U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
                                           ? vlTOPp->top__DOT__wb_pc_plus_imm
                                           : vlTOPp->top__DOT__wb_jal_return_add)
-                                      : ((1U & (IData)(vlTOPp->top__DOT__wb_mux_sel))
+                                      : ((1U & (IData)(vlTOPp->top__DOT__pri_enc_sel))
                                           ? vlTOPp->top__DOT__wb_mem_data
                                           : vlTOPp->top__DOT__wb_alu_result)));
     vlTOPp->top__DOT__control_unit__DOT__sltu = ((IData)(vlTOPp->top__DOT__id_sltur) 
@@ -2931,140 +2948,24 @@ VL_INLINE_OPT void Vtop::_sequent__TOP__5(Vtop__Syms* __restrict vlSymsp) {
             vlTOPp->top__DOT__ex_sw = vlTOPp->top__DOT__id_sw;
         }
     }
-    if (vlTOPp->top__DOT__mem_lb) {
-        vlTOPp->top__DOT__mem_read_data = ((0xffffff00U 
-                                            & (VL_NEGATE_I((IData)(
-                                                                   (1U 
-                                                                    & (((0x1000U 
-                                                                         >= 
-                                                                         (0x1fffU 
-                                                                          & vlTOPp->top__DOT__mem_alu_result))
-                                                                         ? 
-                                                                        vlTOPp->top__DOT__data_mem__DOT__memory
-                                                                        [
-                                                                        (0x1fffU 
-                                                                         & vlTOPp->top__DOT__mem_alu_result)]
-                                                                         : 0U) 
-                                                                       >> 7U)))) 
-                                               << 8U)) 
-                                           | ((0x1000U 
-                                               >= (0x1fffU 
-                                                   & vlTOPp->top__DOT__mem_alu_result))
-                                               ? vlTOPp->top__DOT__data_mem__DOT__memory
-                                              [(0x1fffU 
-                                                & vlTOPp->top__DOT__mem_alu_result)]
-                                               : 0U));
-    } else {
-        if (vlTOPp->top__DOT__mem_lh) {
-            vlTOPp->top__DOT__mem_read_data = ((0xffff0000U 
+    vlTOPp->top__DOT__mem_read_data = ((IData)(vlTOPp->top__DOT__mem_load_enb)
+                                        ? ((IData)(vlTOPp->top__DOT__mem_lb)
+                                            ? ((0xffffff00U 
                                                 & (VL_NEGATE_I((IData)(
                                                                        (1U 
                                                                         & (((0x1000U 
                                                                              >= 
                                                                              (0x1fffU 
-                                                                              & ((IData)(1U) 
-                                                                                + vlTOPp->top__DOT__mem_alu_result)))
+                                                                              & vlTOPp->top__DOT__mem_alu_result))
                                                                              ? 
                                                                             vlTOPp->top__DOT__data_mem__DOT__memory
                                                                             [
                                                                             (0x1fffU 
-                                                                             & ((IData)(1U) 
-                                                                                + vlTOPp->top__DOT__mem_alu_result))]
+                                                                             & vlTOPp->top__DOT__mem_alu_result)]
                                                                              : 0U) 
                                                                            >> 7U)))) 
-                                                   << 0x10U)) 
-                                               | ((((0x1000U 
-                                                     >= 
-                                                     (0x1fffU 
-                                                      & ((IData)(1U) 
-                                                         + vlTOPp->top__DOT__mem_alu_result)))
-                                                     ? 
-                                                    vlTOPp->top__DOT__data_mem__DOT__memory
-                                                    [
-                                                    (0x1fffU 
-                                                     & ((IData)(1U) 
-                                                        + vlTOPp->top__DOT__mem_alu_result))]
-                                                     : 0U) 
-                                                   << 8U) 
-                                                  | ((0x1000U 
-                                                      >= 
-                                                      (0x1fffU 
-                                                       & vlTOPp->top__DOT__mem_alu_result))
-                                                      ? 
-                                                     vlTOPp->top__DOT__data_mem__DOT__memory
-                                                     [
-                                                     (0x1fffU 
-                                                      & vlTOPp->top__DOT__mem_alu_result)]
-                                                      : 0U)));
-        } else {
-            if (vlTOPp->top__DOT__mem_lw) {
-                vlTOPp->top__DOT__mem_read_data = (
-                                                   (((0x1000U 
-                                                      >= 
-                                                      (0x1fffU 
-                                                       & ((IData)(3U) 
-                                                          + vlTOPp->top__DOT__mem_alu_result)))
-                                                      ? 
-                                                     vlTOPp->top__DOT__data_mem__DOT__memory
-                                                     [
-                                                     (0x1fffU 
-                                                      & ((IData)(3U) 
-                                                         + vlTOPp->top__DOT__mem_alu_result))]
-                                                      : 0U) 
-                                                    << 0x18U) 
-                                                   | ((((0x1000U 
-                                                         >= 
-                                                         (0x1fffU 
-                                                          & ((IData)(2U) 
-                                                             + vlTOPp->top__DOT__mem_alu_result)))
-                                                         ? 
-                                                        vlTOPp->top__DOT__data_mem__DOT__memory
-                                                        [
-                                                        (0x1fffU 
-                                                         & ((IData)(2U) 
-                                                            + vlTOPp->top__DOT__mem_alu_result))]
-                                                         : 0U) 
-                                                       << 0x10U) 
-                                                      | ((((0x1000U 
-                                                            >= 
-                                                            (0x1fffU 
-                                                             & ((IData)(1U) 
-                                                                + vlTOPp->top__DOT__mem_alu_result)))
-                                                            ? 
-                                                           vlTOPp->top__DOT__data_mem__DOT__memory
-                                                           [
-                                                           (0x1fffU 
-                                                            & ((IData)(1U) 
-                                                               + vlTOPp->top__DOT__mem_alu_result))]
-                                                            : 0U) 
-                                                          << 8U) 
-                                                         | ((0x1000U 
-                                                             >= 
-                                                             (0x1fffU 
-                                                              & vlTOPp->top__DOT__mem_alu_result))
-                                                             ? 
-                                                            vlTOPp->top__DOT__data_mem__DOT__memory
-                                                            [
-                                                            (0x1fffU 
-                                                             & vlTOPp->top__DOT__mem_alu_result)]
-                                                             : 0U))));
-            } else {
-                if (vlTOPp->top__DOT__mem_lbu) {
-                    vlTOPp->top__DOT__mem_read_data 
-                        = ((0x1000U >= (0x1fffU & vlTOPp->top__DOT__mem_alu_result))
-                            ? vlTOPp->top__DOT__data_mem__DOT__memory
-                           [(0x1fffU & vlTOPp->top__DOT__mem_alu_result)]
-                            : 0U);
-                } else {
-                    if (vlTOPp->top__DOT__mem_lhu) {
-                        vlTOPp->top__DOT__mem_read_data 
-                            = ((((0x1000U >= (0x1fffU 
-                                              & ((IData)(1U) 
-                                                 + vlTOPp->top__DOT__mem_alu_result)))
-                                  ? vlTOPp->top__DOT__data_mem__DOT__memory
-                                 [(0x1fffU & ((IData)(1U) 
-                                              + vlTOPp->top__DOT__mem_alu_result))]
-                                  : 0U) << 8U) | ((0x1000U 
+                                                   << 8U)) 
+                                               | ((0x1000U 
                                                    >= 
                                                    (0x1fffU 
                                                     & vlTOPp->top__DOT__mem_alu_result))
@@ -3073,12 +2974,141 @@ VL_INLINE_OPT void Vtop::_sequent__TOP__5(Vtop__Syms* __restrict vlSymsp) {
                                                   [
                                                   (0x1fffU 
                                                    & vlTOPp->top__DOT__mem_alu_result)]
-                                                   : 0U));
-                    }
-                }
-            }
-        }
-    }
+                                                   : 0U))
+                                            : ((IData)(vlTOPp->top__DOT__mem_lh)
+                                                ? (
+                                                   (0xffff0000U 
+                                                    & (VL_NEGATE_I((IData)(
+                                                                           (1U 
+                                                                            & (((0x1000U 
+                                                                                >= 
+                                                                                (0x1fffU 
+                                                                                & ((IData)(1U) 
+                                                                                + vlTOPp->top__DOT__mem_alu_result)))
+                                                                                 ? 
+                                                                                vlTOPp->top__DOT__data_mem__DOT__memory
+                                                                                [
+                                                                                (0x1fffU 
+                                                                                & ((IData)(1U) 
+                                                                                + vlTOPp->top__DOT__mem_alu_result))]
+                                                                                 : 0U) 
+                                                                               >> 7U)))) 
+                                                       << 0x10U)) 
+                                                   | ((((0x1000U 
+                                                         >= 
+                                                         (0x1fffU 
+                                                          & ((IData)(1U) 
+                                                             + vlTOPp->top__DOT__mem_alu_result)))
+                                                         ? 
+                                                        vlTOPp->top__DOT__data_mem__DOT__memory
+                                                        [
+                                                        (0x1fffU 
+                                                         & ((IData)(1U) 
+                                                            + vlTOPp->top__DOT__mem_alu_result))]
+                                                         : 0U) 
+                                                       << 8U) 
+                                                      | ((0x1000U 
+                                                          >= 
+                                                          (0x1fffU 
+                                                           & vlTOPp->top__DOT__mem_alu_result))
+                                                          ? 
+                                                         vlTOPp->top__DOT__data_mem__DOT__memory
+                                                         [
+                                                         (0x1fffU 
+                                                          & vlTOPp->top__DOT__mem_alu_result)]
+                                                          : 0U)))
+                                                : ((IData)(vlTOPp->top__DOT__mem_lw)
+                                                    ? 
+                                                   ((((0x1000U 
+                                                       >= 
+                                                       (0x1fffU 
+                                                        & ((IData)(3U) 
+                                                           + vlTOPp->top__DOT__mem_alu_result)))
+                                                       ? 
+                                                      vlTOPp->top__DOT__data_mem__DOT__memory
+                                                      [
+                                                      (0x1fffU 
+                                                       & ((IData)(3U) 
+                                                          + vlTOPp->top__DOT__mem_alu_result))]
+                                                       : 0U) 
+                                                     << 0x18U) 
+                                                    | ((((0x1000U 
+                                                          >= 
+                                                          (0x1fffU 
+                                                           & ((IData)(2U) 
+                                                              + vlTOPp->top__DOT__mem_alu_result)))
+                                                          ? 
+                                                         vlTOPp->top__DOT__data_mem__DOT__memory
+                                                         [
+                                                         (0x1fffU 
+                                                          & ((IData)(2U) 
+                                                             + vlTOPp->top__DOT__mem_alu_result))]
+                                                          : 0U) 
+                                                        << 0x10U) 
+                                                       | ((((0x1000U 
+                                                             >= 
+                                                             (0x1fffU 
+                                                              & ((IData)(1U) 
+                                                                 + vlTOPp->top__DOT__mem_alu_result)))
+                                                             ? 
+                                                            vlTOPp->top__DOT__data_mem__DOT__memory
+                                                            [
+                                                            (0x1fffU 
+                                                             & ((IData)(1U) 
+                                                                + vlTOPp->top__DOT__mem_alu_result))]
+                                                             : 0U) 
+                                                           << 8U) 
+                                                          | ((0x1000U 
+                                                              >= 
+                                                              (0x1fffU 
+                                                               & vlTOPp->top__DOT__mem_alu_result))
+                                                              ? 
+                                                             vlTOPp->top__DOT__data_mem__DOT__memory
+                                                             [
+                                                             (0x1fffU 
+                                                              & vlTOPp->top__DOT__mem_alu_result)]
+                                                              : 0U))))
+                                                    : 
+                                                   ((IData)(vlTOPp->top__DOT__mem_lbu)
+                                                     ? 
+                                                    ((0x1000U 
+                                                      >= 
+                                                      (0x1fffU 
+                                                       & vlTOPp->top__DOT__mem_alu_result))
+                                                      ? 
+                                                     vlTOPp->top__DOT__data_mem__DOT__memory
+                                                     [
+                                                     (0x1fffU 
+                                                      & vlTOPp->top__DOT__mem_alu_result)]
+                                                      : 0U)
+                                                     : 
+                                                    ((IData)(vlTOPp->top__DOT__mem_lhu)
+                                                      ? 
+                                                     ((((0x1000U 
+                                                         >= 
+                                                         (0x1fffU 
+                                                          & ((IData)(1U) 
+                                                             + vlTOPp->top__DOT__mem_alu_result)))
+                                                         ? 
+                                                        vlTOPp->top__DOT__data_mem__DOT__memory
+                                                        [
+                                                        (0x1fffU 
+                                                         & ((IData)(1U) 
+                                                            + vlTOPp->top__DOT__mem_alu_result))]
+                                                         : 0U) 
+                                                       << 8U) 
+                                                      | ((0x1000U 
+                                                          >= 
+                                                          (0x1fffU 
+                                                           & vlTOPp->top__DOT__mem_alu_result))
+                                                          ? 
+                                                         vlTOPp->top__DOT__data_mem__DOT__memory
+                                                         [
+                                                         (0x1fffU 
+                                                          & vlTOPp->top__DOT__mem_alu_result)]
+                                                          : 0U))
+                                                      : 0U)))))
+                                        : 0U);
     vlTOPp->top__DOT__ex_rs1_forwarded = ((2U == (IData)(vlTOPp->top__DOT__forward_a))
                                            ? vlTOPp->top__DOT__mem_alu_result
                                            : ((1U == (IData)(vlTOPp->top__DOT__forward_a))
@@ -3539,7 +3569,7 @@ void Vtop::_ctor_var_reset() {
     top__DOT__wb_pcplus4 = VL_RAND_RESET_I(32);
     top__DOT__mem_pc_plus_imm = VL_RAND_RESET_I(32);
     top__DOT__wb_pc_plus_imm = VL_RAND_RESET_I(32);
-    top__DOT__wb_mux_sel = VL_RAND_RESET_I(3);
+    top__DOT__pri_enc_sel = VL_RAND_RESET_I(3);
     top__DOT__mem_jal_return_add = VL_RAND_RESET_I(32);
     top__DOT__wb_jal_return_add = VL_RAND_RESET_I(32);
     top__DOT__flush_for_if = VL_RAND_RESET_I(1);
@@ -3567,6 +3597,8 @@ void Vtop::_ctor_var_reset() {
     top__DOT__wb_wenb = VL_RAND_RESET_I(1);
     top__DOT__mem_rs1 = VL_RAND_RESET_I(5);
     top__DOT__mem_rs2 = VL_RAND_RESET_I(5);
+    top__DOT__mem_auipc_wenb = VL_RAND_RESET_I(1);
+    top__DOT__mem_lui_enb = VL_RAND_RESET_I(1);
     top__DOT____Vcellinp__mux_rs2__sel_bit = VL_RAND_RESET_I(4);
     top__DOT__fetch__DOT__pc = VL_RAND_RESET_I(32);
     top__DOT__fetch__DOT__pc_next = VL_RAND_RESET_I(32);
@@ -3610,37 +3642,37 @@ void Vtop::_ctor_var_reset() {
     __Vtable1_top__DOT__ex_sel_bit_mux[14] = 2U;
     __Vtable1_top__DOT__ex_sel_bit_mux[15] = 3U;
     __Vtableidx2 = 0;
-    __Vtable2_top__DOT__wb_mux_sel[0] = 0U;
-    __Vtable2_top__DOT__wb_mux_sel[1] = 0U;
-    __Vtable2_top__DOT__wb_mux_sel[2] = 1U;
-    __Vtable2_top__DOT__wb_mux_sel[3] = 1U;
-    __Vtable2_top__DOT__wb_mux_sel[4] = 2U;
-    __Vtable2_top__DOT__wb_mux_sel[5] = 2U;
-    __Vtable2_top__DOT__wb_mux_sel[6] = 2U;
-    __Vtable2_top__DOT__wb_mux_sel[7] = 2U;
-    __Vtable2_top__DOT__wb_mux_sel[8] = 3U;
-    __Vtable2_top__DOT__wb_mux_sel[9] = 3U;
-    __Vtable2_top__DOT__wb_mux_sel[10] = 3U;
-    __Vtable2_top__DOT__wb_mux_sel[11] = 3U;
-    __Vtable2_top__DOT__wb_mux_sel[12] = 3U;
-    __Vtable2_top__DOT__wb_mux_sel[13] = 3U;
-    __Vtable2_top__DOT__wb_mux_sel[14] = 3U;
-    __Vtable2_top__DOT__wb_mux_sel[15] = 3U;
-    __Vtable2_top__DOT__wb_mux_sel[16] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[17] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[18] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[19] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[20] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[21] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[22] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[23] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[24] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[25] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[26] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[27] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[28] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[29] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[30] = 4U;
-    __Vtable2_top__DOT__wb_mux_sel[31] = 4U;
+    __Vtable2_top__DOT__pri_enc_sel[0] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[1] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[2] = 1U;
+    __Vtable2_top__DOT__pri_enc_sel[3] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[4] = 2U;
+    __Vtable2_top__DOT__pri_enc_sel[5] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[6] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[7] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[8] = 3U;
+    __Vtable2_top__DOT__pri_enc_sel[9] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[10] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[11] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[12] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[13] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[14] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[15] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[16] = 4U;
+    __Vtable2_top__DOT__pri_enc_sel[17] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[18] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[19] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[20] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[21] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[22] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[23] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[24] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[25] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[26] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[27] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[28] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[29] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[30] = 0U;
+    __Vtable2_top__DOT__pri_enc_sel[31] = 0U;
     __Vm_traceActivity = 0;
 }
