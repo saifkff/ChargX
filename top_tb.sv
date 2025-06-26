@@ -14,7 +14,7 @@ initial begin
   $dumpfile("top_tb.vcd");
   $dumpvars(0,top_tb);
   #15 rst = 0;
-  #200 $finish;
+  #400 $finish;
 end
 
 initial begin
