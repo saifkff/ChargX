@@ -381,7 +381,8 @@ module fetch (
     input wire [31:0] pc_plus_4,pc_plus_imm, pc_plus_imm_2,rs1_plus_imm_for_jalr,
     input wire stall,
     output wire [31:0] instruction,
-    output wire [31:0] pc_out
+    output wire [31:0] pc_out,
+    output reg rvfi_o_valid_0
 );
     wire [31:0] pc, pc_next;
 
@@ -395,7 +396,8 @@ module fetch (
 
     instruction_mem IM (
         .addr(pc),
-        .instruction(instruction)
+        .instruction(instruction),
+        .rvfi_o_valid_0(rvfi_o_valid_0)
     );
 	
   	mux_4to1 mux4 (
@@ -512,7 +514,8 @@ module MEM_WB (
 endmodule
 module instruction_mem (
     input wire [31:0] addr,
-    output wire [31:0] instruction
+    output wire [31:0] instruction,
+    output reg rvfi_o_valid_0
 );
   reg [31:0] memory [0:4096];
 
@@ -520,7 +523,15 @@ module instruction_mem (
         $readmemh("instructions.hex", memory); 
     end
 
-    assign instruction = memory[addr >> 2]; 
+    assign instruction = memory[addr >> 2];
+    always @(*) begin
+        if (instruction == 32'b0) begin
+            rvfi_o_valid_0 = 0;
+        end
+        else begin
+            rvfi_o_valid_0 = 1;
+        end
+    end 
 
 endmodule
 module pc_plus_4(
@@ -635,7 +646,7 @@ module regfile (
     input [4:0] rs1, rs2, rd_select,
   	output reg [31:0] data_out1, data_out2
 );
-    reg [31:0][31:0] registers ;
+    reg [31:0] registers[31:0] ;
     integer i; 
     always @(*) begin
         data_out1 = (rs1 == 0) ? 32'b0 : registers[rs1];

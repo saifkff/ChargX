@@ -1,13 +1,28 @@
 module top (
-    input wire clk,rst
+    input wire clk,rst,
+    output wire [31:0] if_instruction,if_pc_out,id_instruction,
+    output wire [4:0] id_rs1, id_rs2, id_rd,wb_rd,
+    output wire [31:0] id_rs1_data, id_rs2_data,ex_alu_result,mem_read_data,
+    output wire [31:0] wb_data,
+    output wire stall,flush,
+    output wire [1:0] forward_a,forward_b,
+    output wire rvfi_o_valid_0,
+    output wire [31:0] rvfi_o_insn_0,
+    output wire [4:0] rvfi_o_rs1_addr_0,rvfi_o_rs2_addr_0,
+    output wire [31:0] rvfi_o_rs1_rdata_0,rvfi_o_rs2_rdata_0,
+    output wire [4:0] rvfi_o_rd_addr_0,
+    output wire [31:0] rvfi_o_rd_wdata_0, rvfi_o_pc_rdata_0,
+    output wire [31:0] rvfi_o_pc_wdata_0,rvfi_o_mem_addr_0,
+    output wire [3:0] rvfi_o_mem_wmask_0,
+    output wire [31:0] rvfi_o_mem_rdata_0,rvfi_o_mem_wdata_0
 );
-    wire [31:0]if_instruction,if_pcplus4,if_pc_out;
+    wire [31:0] if_pcplus4;
     wire [1:0] ex_sel_bit_mux,wb_sel_bit_mux,mem_sel_bit_mux;
     wire [31:0] ex_pc_plus_imm,ex_pc_plus_imm_2,ex_rs1_plus_imm_for_jalr;
-    wire [31:0] id_instruction,id_pcplus4;
-    wire stall,flush,mem_jal_enb;
-    wire [4:0] id_rs1,id_rs2,id_rd,wb_rd,ex_rd,ex_rs1,ex_rs2,mem_rd;
-    wire [31:0] id_rs1_data,id_rs2_data,id_imm;
+    wire [31:0] id_pcplus4;
+    wire mem_jal_enb;
+    wire [4:0] ex_rd,ex_rs1,ex_rs2,mem_rd;
+    wire [31:0] id_imm;
     wire [3:0] id_alu_sel,ex_alu_sel;
     wire id_wenb,id_rs2_imm_sel,id_load_enb,id_jal_enb,id_branch_enb;
     wire id_lui_enb,id_auipc_wenb,id_sb,id_sw,id_sh;
@@ -15,12 +30,10 @@ module top (
     wire id_addr, id_sub, id_sllr, id_sltr, id_sltur, id_xorr, id_srlr, id_srar, id_orr, id_andr;
     wire id_addi, id_addi2, id_slli, id_slti, id_sltui, id_xori, id_srli, id_srai, id_ori, id_andi;
     wire id_jal, id_jalr, id_beq, id_bne, id_blt, id_bge, id_bltu, id_bgeu;
-    wire [31:0] wb_data;
     wire ex_branch_taken,ex_jal_enb,ex_wenb,ex_rs2_imm_sel,ex_branch_enb,ex_lui_enb,ex_auipc_wenb,ex_sb,ex_sh,ex_sw;
-    wire [31:0] ex_store_data,ex_alu_result,ex_alu_data_B,ex_rs1_data,ex_rs2_data,ex_imm,ex_pcplus4,ex_rs1_forwarded,ex_rs2_forwarded;
+    wire [31:0] ex_store_data,ex_alu_data_B,ex_rs1_data,ex_rs2_data,ex_imm,ex_pcplus4,ex_rs1_forwarded,ex_rs2_forwarded;
     wire mem_store_enb,ex_store_enb,id_store_enb,wb_load_enb,wb_jal_enb,wb_lui_enb,wb_auipc_wenb,mem_wenb,mem_load_enb,mem_sb,mem_sh,mem_sw;
-    wire [1:0] forward_a,forward_b;
-    wire [31:0] mem_alu_result,mem_store_data,mem_read_data,wb_mem_data,wb_alu_result;
+    wire [31:0] mem_alu_result,mem_store_data,wb_mem_data,wb_alu_result;
     wire [31:0] wb_pcplus4,id_pc_plus_imm,id_rs1_forwarded,id_rs2_forwarded,mem_pc_plus_imm,wb_pc_plus_imm;
     wire [2:0] pri_enc_sel;
     wire [31:0] jal_jump_target,jal_return_add,mem_jal_return_add,wb_jal_return_add;
@@ -41,19 +54,20 @@ module top (
     fetch fetch (
         .clk(clk),
         .rst(rst),
-        .instruction(if_instruction),
+        .instruction(rvfi_o_insn_0),
         .pc_out(if_pc_out),
         .sel(ex_sel_bit_mux),
         .pc_plus_4(if_pcplus4),
         .pc_plus_imm(jal_jump_target),
         .pc_plus_imm_2(ex_pc_plus_imm_2),
         .rs1_plus_imm_for_jalr(id_rs1_plus_imm_for_jalr),
-        .stall(stall)
+        .stall(stall),
+        .rvfi_o_valid_0(rvfi_o_valid_0)
     );
     IF_ID if_id(
         .clk(clk),
         .rst(rst),
-        .instruction_in(if_instruction),
+        .instruction_in(rvfi_o_insn_0),
         .pcplus4_in(if_pcplus4),
         .instruction_out(id_instruction),
         .pcplus4_out(id_pcplus4),

@@ -2,7 +2,7 @@
 #include "verilated_vcd_c.h"
 #include "Vtop.h"
 
-#define MAX_SIM_TIME 100000  // In cycles
+#define MAX_SIM_TIME 200  // In cycles
 
 int main(int argc, char **argv, char **env) {
 	if (false && argc && argv && env) {}
@@ -23,18 +23,18 @@ int main(int argc, char **argv, char **env) {
 	tfp->open("logs/top.vcd");
 
 	unsigned int sim_time = 0;
-	top->clock = 1;
+	top->clk = 1;
 	while (!contextp->gotFinish() && sim_time < MAX_SIM_TIME) {
-		top->clock ^= 1;  // Toggle clock
+		top->clk ^= 1;  // Toggle clock
 		if (sim_time <= 1) {
-		    top->reset = 1;  // Assert reset
+		    top->rst = 1;  // Assert reset
 		} else {
-		    top->reset = 0;  // Deassert reset
+		    top->rst = 0;  // Deassert reset
 		}
 		top->eval();  // Evaluate model
 		tfp->dump(sim_time);
         printf(
-            "Time: %d | PC: %d | IF_Inst: %x | ID_Inst: %x | rs1: %d | rs2: %d | rd: %d | rs1_data: %d | rs2_data: %d | ALU_Result: %d | Mem_Read: %d | WB_Data: %d | WB_rd: %d | Stall: %b | Flush: %b | Forward_A: %b | Forward_B: %b",
+            "Time: %d | PC: %d | IF_Inst: %x | ID_Inst: %x | rs1: %d | rs2: %d | rd: %d | rs1_data: %d | rs2_data: %d | ALU_Result: %d | Mem_Read: %d | WB_Data: %d | WB_rd: %d | Stall: %b | Flush: %b | Forward_A: %b | Forward_B: %b\n",
             sim_time,
             top->if_pc_out,
             top->if_instruction,
@@ -52,7 +52,7 @@ int main(int argc, char **argv, char **env) {
             top->flush,
             top->forward_a,
             top->forward_b
-        )
+        );
 		++sim_time;
 	}
 	top->final();
