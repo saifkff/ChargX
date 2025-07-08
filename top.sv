@@ -1,12 +1,7 @@
 /* verilator lint_off PINMISSING */
+/* verilator lint_off NULLPORT */
 module core (
     input wire clk,rst,
-    output wire [31:0] if_instruction,if_pc_out,id_instruction,
-    output wire [4:0] id_rs1, id_rs2, id_rd,wb_rd,
-    output wire [31:0] id_rs1_data, id_rs2_data,ex_alu_result,mem_read_data,
-    output wire [31:0] wb_data,
-    output wire stall,flush,
-    output wire [1:0] forward_a,forward_b,
     output wire rvfi_o_valid_0,
     output wire [31:0] rvfi_o_insn_0,
     output wire [4:0] rvfi_o_rs1_addr_0,rvfi_o_rs2_addr_0,
@@ -17,6 +12,12 @@ module core (
     output wire [3:0] rvfi_o_mem_wmask_0,
     output wire [31:0] rvfi_o_mem_rdata_0,rvfi_o_mem_wdata_0
 );
+    wire [31:0] if_instruction,if_pc_out,id_instruction;
+    wire [4:0] id_rs1, id_rs2, id_rd,wb_rd;
+    wire [31:0] id_rs1_data, id_rs2_data,ex_alu_result,mem_read_data;
+    wire [31:0] wb_data;
+    wire stall,flush;
+    wire [1:0] forward_a,forward_b;
     wire [31:0] if_pcplus4;
     wire [1:0] ex_sel_bit_mux,wb_sel_bit_mux,mem_sel_bit_mux;
     wire [31:0] ex_pc_plus_imm,ex_pc_plus_imm_2,ex_rs1_plus_imm_for_jalr;
@@ -51,6 +52,9 @@ module core (
     wire [3:0] id_wmask, ex_wmask, mem_wmask,wmask_final;
     wire id_we, ex_we, mem_we;
     wire [4:0] rs1_final,rs2_final;
+    wire [31:0] ex_instruction,instruction_final ;
+    wire [31:0] rs1_data_final,rs2_data_final ;
+    wire [31:0] current_pc_final,if_pc_w,mem_current_pc,id_pc_w,ex_pc_w,pc_w_final,store_data_final ;
 
     pc_plus_4 pcplus4(
         .pc(fetch.PC.pc_out),
@@ -67,7 +71,7 @@ module core (
         .pc_plus_imm_2(ex_pc_plus_imm_2),
         .rs1_plus_imm_for_jalr(id_rs1_plus_imm_for_jalr),
         .stall(stall),
-        .rvfi_o_valid_0(rvfi_o_valid_0)
+        .pc_next(if_pc_w)
     );
     IF_ID if_id(
         .clk(clk),
@@ -80,9 +84,9 @@ module core (
         .flush(flush),
         .flush_for_if(flush_for_if),
         .current_pc_in(fetch.PC.pc_out),
-        .current_pc_out(if_current_pc),
-        .ins_valid_pin_in(rvfi_o_valid_0),
-        .ins_valid_pin_out(if_id_ins_valid_pin)
+        .current_pc_out(id_current_pc),
+        .pc_w_in(if_pc_w),
+        .pc_w_out(id_pc_w)
     );
     decoder decoder(
         .instruction(id_instruction),
@@ -107,6 +111,8 @@ module core (
         .sel()
     );
     control_unit control_unit(
+        .clk(clk), .rst(rst),
+        .valid_pin(if_id_ins_valid_pin),
         .instruction(id_instruction),
         .branch_taken(ex_branch_taken),
         .sel(id_alu_sel),
@@ -127,7 +133,7 @@ module core (
         .branch_enb(id_branch_enb),
         .in_to_pr(id_in_to_pr),.store_enb(id_store_enb),
         .jal_jump_target(jal_jump_target),
-        .current_pc(if_current_pc),
+        .current_pc(id_current_pc),
         .imm_for_jal(id_imm),
         .jal_return_add(jal_return_add),
         .pcplus4(id_pcplus4),
@@ -172,8 +178,8 @@ module core (
         .lui_enb_out(ex_lui_enb),.auipc_wenb_out(ex_auipc_wenb),.sb_out(ex_sb),.sh_out(ex_sh),.sw_out(ex_sw),
         .rs1_data_out(ex_rs1_data),.rs2_data_out(ex_rs2_data),.imm_out(ex_imm),
         .pcplus4_out(ex_pcplus4),.pc_plus_imm_out(ex_pc_plus_imm),.rd_out(ex_rd),.stall(stall),.flush(flush),.store_enb_out(ex_store_enb),
-        .current_pc_in(if_current_pc),
-        .current_pc_out(id_current_pc),
+        .current_pc_in(id_current_pc),
+        .current_pc_out(ex_current_pc),
         .jal_return_add_in(jal_return_add),
         .jal_return_add_out(ex_jal_return_add),
         .lb_in(id_lb), .lh_in(id_lh), .lw_in(id_lw),
@@ -182,7 +188,9 @@ module core (
         .lbu_out(ex_lbu), .lhu_out(ex_lhu),
         .ins_valid_pin_in(if_id_ins_valid_pin),.ins_valid_pin_out(id_ex_ins_valid_pin),
         .we_in(id_we), .wmask_in(id_wmask),
-        .we_out(ex_we), .wmask_out(ex_wmask)
+        .we_out(ex_we), .wmask_out(ex_wmask),
+        .instruction_in(id_instruction), .instruction_out(ex_instruction),
+        .pc_w_in(id_pc_w),.pc_w_out(ex_pc_w)
     );
     forwarding_unit forwarding_unit(
         .ex_rs1(ex_rs1),.ex_rs2(ex_rs2),.id_rs1(id_rs1),.id_rs2(id_rs2),
@@ -244,7 +252,8 @@ module core (
         .lui_enb_in(ex_lui_enb), .lui_enb_out(mem_lui_enb),
         .ins_valid_pin_in(id_ex_ins_valid_pin),.ins_valid_pin_out(ex_mem_ins_valid_pin),
         .we_in(ex_we), .wmask_in(ex_wmask),
-        .we_out(mem_we), .wmask_out(mem_wmask)
+        .we_out(mem_we), .wmask_out(mem_wmask),
+        .current_pc_in(ex_current_pc),.current_pc_out(mem_current_pc)
     );
     /* data_mem data_mem(
         .clk(clk),.load_enb(mem_load_enb),.sb(mem_sb),.sh(mem_sh),.sw(mem_sw),
@@ -298,13 +307,43 @@ module core (
         .wmask_in(mem_wmask),
         .wmask_out(wmask_final),
         .rs1_in(mem_rs1), .rs2_in(mem_rs2),
-        .rs1_out(rs1_final), .rs2_out(rs2_final)
+        .rs1_out(rs1_final), .rs2_out(rs2_final),
+        .instruction_in(ex_instruction), .instruction_out(instruction_final),
+        .rs1_data_in(ex_rs1_forwarded),.rs2_data_in(ex_rs2_forwarded),
+        .rs1_data_out(rs1_data_final), .rs2_data_out(rs2_data_final),
+        .current_pc_in(mem_current_pc),.current_pc_out(current_pc_final),
+        .pc_w_in(ex_pc_w),.pc_w_out(pc_w_final),
+        .store_data_in(mem_store_data),.store_data_out(store_data_final)
     );
     Tracer Tracer(
         .rvfi_i_bool(mem_wb_ins_valid_pin),
         .rvfi_i_uint4(wmask_final),
         .rvfi_i_uint5_0(rs1_final),
-        .rvfi_i_uint5_1(rs2_final)
+        .rvfi_i_uint5_1(rs2_final),
+        .rvfi_i_uint5_2(wb_rd),
+        .rvfi_i_uint32_0(instruction_final),
+        .rvfi_i_uint32_1(rs1_data_final),
+        .rvfi_i_uint32_2(rs2_data_final),
+        .rvfi_i_uint32_3(wb_data),
+        .rvfi_i_uint32_4(current_pc_final),
+        .rvfi_i_uint32_5(pc_w_final),
+        .rvfi_i_uint32_6(wb_alu_result),
+        .rvfi_i_uint32_7(wb_mem_data),
+        .rvfi_i_uint32_8(store_data_final),
+        .rvfi_o_valid_0(rvfi_o_valid_0),
+        .rvfi_o_insn_0(rvfi_o_insn_0),
+        .rvfi_o_rs1_addr_0(rvfi_o_rs1_addr_0),
+        .rvfi_o_rs2_addr_0(rvfi_o_rs2_addr_0),
+        .rvfi_o_rs1_rdata_0(rvfi_o_rs1_rdata_0),
+        .rvfi_o_rs2_rdata_0(rvfi_o_rs2_rdata_0),
+        .rvfi_o_rd_addr_0(rvfi_o_rd_addr_0),
+        .rvfi_o_rd_wdata_0(rvfi_o_rd_wdata_0),
+        .rvfi_o_pc_rdata_0(rvfi_o_pc_rdata_0),
+        .rvfi_o_pc_wdata_0(rvfi_o_pc_wdata_0),
+        .rvfi_o_mem_addr_0(rvfi_o_mem_addr_0),
+        .rvfi_o_mem_wmask_0(rvfi_o_mem_wmask_0),
+        .rvfi_o_mem_rdata_0(rvfi_o_mem_rdata_0),
+        .rvfi_o_mem_wdata_0(rvfi_o_mem_wdata_0)
     );
 
 endmodule

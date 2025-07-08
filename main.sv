@@ -1,4 +1,5 @@
 // Code your design here
+/* verilator lint_off NULLPORT */
 module adder_for_auipc (
     input [31:0] pc_for_auipc,    
     input [31:0] imm_for_btype,   
@@ -11,6 +12,8 @@ endmodule
 module ID_EX (
     input wire clk,rst,
     input wire [3:0] alu_sel_in,
+    input wire [31:0] pc_w_in,
+    input wire [31:0] instruction_in,
     input wire wenb_in,rs2_imm_sel_in,load_enb_in,jal_enb_in,branch_enb_in,lui_enb_in,auipc_wenb_in,sb_in,sh_in,sw_in,store_enb_in,
     input wire [31:0] rs1_data_in,rs2_data_in,imm_in,pcplus4_in,pc_plus_imm_in,
     input wire [4:0] rd_in,rs1_in,rs2_in,
@@ -26,6 +29,8 @@ module ID_EX (
     output reg lb_out,lh_out,lw_out,lbu_out,lhu_out,ins_valid_pin_out,
     output reg we_out,
     output reg [3:0] wmask_out,
+    output reg [31:0] instruction_out,
+    output reg [31:0] pc_w_out,
     input wire stall,flush
 );
     always @(posedge clk or posedge rst) begin
@@ -38,7 +43,8 @@ module ID_EX (
             current_pc_out <= 32'b0;jal_return_add_out<=32'b0;
             lb_out <= 1'b0; lh_out <= 1'b0; lw_out <= 1'b0;
             lhu_out <= 1'b0; lbu_out <= 1'b0;ins_valid_pin_out<=1'b0;
-            we_out <= 1'b0; wmask_out <= 4'b0;
+            we_out <= 1'b0; wmask_out <= 4'b0;instruction_out <= 32'b0;
+            pc_w_out<=32'b0;
         end
         else if (!stall) begin
             alu_sel_out <= alu_sel_in;
@@ -50,7 +56,8 @@ module ID_EX (
             current_pc_out <= current_pc_in;jal_return_add_out<=jal_return_add_in;
             lb_out <= lb_in; lw_out <= lw_in; lh_out <= lh_in;
             lbu_out <= lbu_in; lhu_out<= lhu_in;ins_valid_pin_out<=ins_valid_pin_in;
-            we_out <= we_in; wmask_out <= wmask_in;
+            we_out <= we_in; wmask_out <= wmask_in;instruction_out <= instruction_in;
+            pc_w_out<=pc_w_in;
         end
     end
     
@@ -107,6 +114,7 @@ module alu(
     end
 endmodule
 module control_unit (
+    input clk,rst,
     input [31:0] instruction,
     input wire branch_taken,
     input wire [31:0]current_pc,imm_for_jal,pcplus4,
@@ -121,7 +129,8 @@ module control_unit (
     output wire [31:0] jal_jump_target,jal_return_add, pcplusimm,
     output lui_enb, auipc_wenb, load_enb, jal_enb, branch_enb, in_to_pr,store_enb,
     output wire we,
-    output wire [3:0] wmask
+    output wire [3:0] wmask,
+    output wire valid_pin
 );
     wire [6:0] opcode = instruction[6:0];
     wire [2:0] funct3 = instruction[14:12];
@@ -165,7 +174,7 @@ module control_unit (
     assign sw = (~i0)&(~i1)&(~i2)&(i3)&(~i4)&(~i5)&(i6)&(~i7)&(~i8);
     assign sh = (~i0)&(~i1)&(~i2)&(i3)&(~i4)&(i5)&(~i6)&(~i7)&(~i8);
     assign sb = (~i0)&(~i1)&(~i2)&(i3)&(~i4)&(~i5)&(~i6)&(~i7)&(~i8);
-    assign lb = (~i0)&(~i1)&(~i2)&(~i3)&(~i4)&(~i5)&(~i6)&(~i7)&(~i8);
+    assign lb = (opcode == 7'b0000011 && funct3 == 3'b000);
     assign lh = (~i0)&(~i1)&(~i2)&(~i3)&(~i4)&(i5)&(~i6)&(~i7)&(~i8);
     assign lw = (~i0)&(~i1)&(~i2)&(~i3)&(~i4)&(~i5)&(i6)&(~i7)&(~i8);
     assign lbu = (~i0)&(~i1)&(~i2)&(~i3)&(~i4)&(~i5)&(i6)&(i7)&(~i8);
@@ -231,6 +240,7 @@ module control_unit (
     assign wmask[1] = sh | sw;
     assign wmask[2] = sw;
     assign wmask[3] = sw;
+    assign valid_pin = (opcode != 7'h0);
 
 
 endmodule
@@ -324,9 +334,11 @@ module decoder(
 endmodule
 module IF_ID (
     input wire clk,rst,
+    input wire [31:0] pc_w_in,
     input wire [31:0] instruction_in,pcplus4_in,current_pc_in,
     input wire ins_valid_pin_in,
     output reg [31:0] instruction_out,pcplus4_out,current_pc_out,
+    output reg [31:0] pc_w_out,
     input wire stall,flush,flush_for_if,
     output reg ins_valid_pin_out
 );
@@ -336,12 +348,14 @@ module IF_ID (
             pcplus4_out <= 32'b0;
             current_pc_out <= 32'b0;
             ins_valid_pin_out <= 1'b0;
+            pc_w_out <= 32'b0;
         end
         else if (!stall) begin
             instruction_out <= instruction_in;
             pcplus4_out <= pcplus4_in;
             current_pc_out <= current_pc_in;
             ins_valid_pin_out <= ins_valid_pin_in;
+            pc_w_out <= pc_w_in;
         end
     end
     
@@ -414,9 +428,9 @@ module hazard_detction(
         else if (jal_enb) begin
             flush_for_if = 1;
         end
-        else if (ex_load_enb && ((ex_rd == id_rs1 && ex_rd != 0) || (ex_rd == id_rs2 && ex_rd != 0))) begin
-            stall = 1;
+        else if (ex_load_enb) begin
             flush = 1; 
+            stall =1;
         end
     end
 
@@ -427,10 +441,9 @@ module fetch (
     input wire [31:0] pc_plus_4,pc_plus_imm, pc_plus_imm_2,rs1_plus_imm_for_jalr,
     input wire stall,
     output wire [31:0] instruction,
-    output wire [31:0] pc_out,
-    output wire rvfi_o_valid_0
+    output wire [31:0] pc_out,pc_next,
 );
-    wire [31:0] pc, pc_next;
+    wire [31:0] pc;
 
     pc PC (
         .clk(clk),
@@ -442,8 +455,7 @@ module fetch (
 
     instruction_mem IM (
         .addr(pc),
-        .instruction(instruction),
-        .rvfi_o_valid_0(rvfi_o_valid_0)
+        .instruction(instruction)
     );
 	
   	mux_4to1 mux4 (
@@ -493,6 +505,7 @@ module immediate_generator(
 endmodule
 module EX_MEM (
     input wire clk,rst,
+    input wire [31:0] current_pc_in,
     input wire [31:0] jal_return_add_in,
     input wire [1:0] sel_bit_mux_in,
     input wire we_in,
@@ -510,6 +523,7 @@ module EX_MEM (
     output reg ins_valid_pin_out,
     output reg we_out,
     output reg [3:0] wmask_out,
+    output reg [31:0] current_pc_out,
     input wire flush
 );
     always @(posedge clk or posedge rst) begin
@@ -520,7 +534,7 @@ module EX_MEM (
             lb_out <= 1'b0; lh_out <= 1'b0; lw_out <= 1'b0;
             lhu_out <= 1'b0; lbu_out <= 1'b0; rs1_out <= 5'b0; rs2_out <= 5'b0;
             auipc_wenb_out <= 1'b0; lui_enb_out <= 1'b0;ins_valid_pin_out <= 1'b0;
-            we_out <= 1'b0; wmask_out <= 4'b0;
+            we_out <= 1'b0; wmask_out <= 4'b0;current_pc_out<=32'b0;
         end
         else begin 
             wb_out <= wb_in; load_enb_out <= load_enb_in; sb_out <= sb_in; sh_out <= sh_in; sw_out <= sw_in;
@@ -531,7 +545,7 @@ module EX_MEM (
             lbu_out <= lbu_in; lhu_out<= lhu_in;
             rs1_out <= rs1_in; rs2_out <= rs2_in;
             auipc_wenb_out <= auipc_wenb_in; lui_enb_out <= lui_enb_in;ins_valid_pin_out<=ins_valid_pin_in;
-            we_out <= we_in; wmask_out <= wmask_in;
+            we_out <= we_in; wmask_out <= wmask_in;current_pc_out<=current_pc_in;
         end
     end
     
@@ -569,8 +583,7 @@ module MEM_WB (
 endmodule
 module instruction_mem (
     input wire [31:0] addr,
-    output wire [31:0] instruction,
-    output reg rvfi_o_valid_0
+    output wire [31:0] instruction
 );
   reg [31:0] memory [0:4096];
 
@@ -579,14 +592,6 @@ module instruction_mem (
     end
 
     assign instruction = memory[addr >> 2];
-    always @(*) begin
-        if (instruction == 32'b0) begin
-            rvfi_o_valid_0 = 0;
-        end
-        else begin
-            rvfi_o_valid_0 = 1;
-        end
-    end
 
 endmodule
 module pc_plus_4(

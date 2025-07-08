@@ -4,7 +4,7 @@ module sram #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 13,
     parameter RAM_DEPTH = 1 << ADDR_WIDTH,
-    parameter DELAY = 3,
+    parameter DELAY = 0,
     parameter IZERO = 0 ,
     parameter IFILE = ""
 ) (
@@ -13,7 +13,7 @@ module sram #(
     input [NUM_WMASKS-1:0] wmask,
     input [ADDR_WIDTH-1:0] addr,
     input [DATA_WIDTH-1:0] din,
-    output reg [DATA_WIDTH-1:0] dout
+    output wire [DATA_WIDTH-1:0] dout
 );
     reg csb_reg;
     reg web_reg;
@@ -56,10 +56,6 @@ module sram #(
             end
         end
     end 
-    always @(posedge clk) begin 
-        if (csb_reg && !web_reg) begin
-            dout <= #(DELAY) mem[addr_reg];
-        end
-    end
+        assign dout = mem[addr];
     
 endmodule

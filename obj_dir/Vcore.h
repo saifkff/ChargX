@@ -31,27 +31,11 @@ class alignas(VL_CACHE_LINE_BYTES) Vcore VL_NOT_FINAL : public VerilatedModel {
     // propagate new values into/out from the Verilated model.
     VL_IN8(&clk,0,0);
     VL_IN8(&rst,0,0);
-    VL_OUT8(&id_rs1,4,0);
-    VL_OUT8(&id_rs2,4,0);
-    VL_OUT8(&id_rd,4,0);
-    VL_OUT8(&wb_rd,4,0);
-    VL_OUT8(&stall,0,0);
-    VL_OUT8(&flush,0,0);
-    VL_OUT8(&forward_a,1,0);
-    VL_OUT8(&forward_b,1,0);
     VL_OUT8(&rvfi_o_valid_0,0,0);
     VL_OUT8(&rvfi_o_rs1_addr_0,4,0);
     VL_OUT8(&rvfi_o_rs2_addr_0,4,0);
     VL_OUT8(&rvfi_o_rd_addr_0,4,0);
     VL_OUT8(&rvfi_o_mem_wmask_0,3,0);
-    VL_OUT(&if_instruction,31,0);
-    VL_OUT(&if_pc_out,31,0);
-    VL_OUT(&id_instruction,31,0);
-    VL_OUT(&id_rs1_data,31,0);
-    VL_OUT(&id_rs2_data,31,0);
-    VL_OUT(&ex_alu_result,31,0);
-    VL_OUT(&mem_read_data,31,0);
-    VL_OUT(&wb_data,31,0);
     VL_OUT(&rvfi_o_insn_0,31,0);
     VL_OUT(&rvfi_o_rs1_rdata_0,31,0);
     VL_OUT(&rvfi_o_rs2_rdata_0,31,0);

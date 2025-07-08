@@ -35,24 +35,22 @@ int main(int argc, char **argv, char **env) {
 		core->eval();  // Evaluate model
 		tfp->dump(sim_time);
         printf(
-            "Time: %d | PC: %d | IF_Inst: %x | ID_Inst: %x | rs1: %d | rs2: %d | rd: %d | rs1_data: %d | rs2_data: %d | ALU_Result: %d | Mem_Read: %d | WB_Data: %d | WB_rd: %d | Stall: %b | Flush: %b | Forward_A: %b | Forward_B: %b\n",
+            "Time: %d | valid_pin: %d | Instruction: %x | rs1_add: %d | rs2_add: %d | rs1data: %d | rs2data: %d | rd_add: %d | rd_wdata: %d | pc_rdata: %d | pc_wdata: %d | mem_add: %d | wmask: %d | mem_rdata: %d | mem_wdata: %d\n",
             sim_time,
-            core->if_pc_out,
-            core->if_instruction,
-            core->id_instruction,
-            core->id_rs1,
-            core->id_rs2,
-            core->id_rd,
-            core->id_rs1_data,
-            core->id_rs2_data,
-            core->ex_alu_result,
-            core->mem_read_data,
-            core->wb_data,
-            core->wb_rd,
-            core->stall,
-            core->flush,
-            core->forward_a,
-            core->forward_b
+            core->rvfi_o_valid_0,
+            core->rvfi_o_insn_0,
+            core->rvfi_o_rs1_addr_0,
+            core->rvfi_o_rs2_addr_0,
+            core->rvfi_o_rs1_rdata_0,
+            core->rvfi_o_rs2_rdata_0,
+            core->rvfi_o_rd_addr_0,
+            core->rvfi_o_rd_wdata_0,
+            core->rvfi_o_pc_rdata_0,
+            core->rvfi_o_pc_wdata_0,
+            core->rvfi_o_mem_addr_0,
+            core->rvfi_o_mem_wmask_0,
+            core->rvfi_o_mem_rdata_0,
+            core->rvfi_o_mem_wdata_0
         );
 		++sim_time;
 	}

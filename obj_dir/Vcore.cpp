@@ -12,27 +12,11 @@ Vcore::Vcore(VerilatedContext* _vcontextp__, const char* _vcname__)
     , vlSymsp{new Vcore__Syms(contextp(), _vcname__, this)}
     , clk{vlSymsp->TOP.clk}
     , rst{vlSymsp->TOP.rst}
-    , id_rs1{vlSymsp->TOP.id_rs1}
-    , id_rs2{vlSymsp->TOP.id_rs2}
-    , id_rd{vlSymsp->TOP.id_rd}
-    , wb_rd{vlSymsp->TOP.wb_rd}
-    , stall{vlSymsp->TOP.stall}
-    , flush{vlSymsp->TOP.flush}
-    , forward_a{vlSymsp->TOP.forward_a}
-    , forward_b{vlSymsp->TOP.forward_b}
     , rvfi_o_valid_0{vlSymsp->TOP.rvfi_o_valid_0}
     , rvfi_o_rs1_addr_0{vlSymsp->TOP.rvfi_o_rs1_addr_0}
     , rvfi_o_rs2_addr_0{vlSymsp->TOP.rvfi_o_rs2_addr_0}
     , rvfi_o_rd_addr_0{vlSymsp->TOP.rvfi_o_rd_addr_0}
     , rvfi_o_mem_wmask_0{vlSymsp->TOP.rvfi_o_mem_wmask_0}
-    , if_instruction{vlSymsp->TOP.if_instruction}
-    , if_pc_out{vlSymsp->TOP.if_pc_out}
-    , id_instruction{vlSymsp->TOP.id_instruction}
-    , id_rs1_data{vlSymsp->TOP.id_rs1_data}
-    , id_rs2_data{vlSymsp->TOP.id_rs2_data}
-    , ex_alu_result{vlSymsp->TOP.ex_alu_result}
-    , mem_read_data{vlSymsp->TOP.mem_read_data}
-    , wb_data{vlSymsp->TOP.wb_data}
     , rvfi_o_insn_0{vlSymsp->TOP.rvfi_o_insn_0}
     , rvfi_o_rs1_rdata_0{vlSymsp->TOP.rvfi_o_rs1_rdata_0}
     , rvfi_o_rs2_rdata_0{vlSymsp->TOP.rvfi_o_rs2_rdata_0}

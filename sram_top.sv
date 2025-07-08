@@ -41,7 +41,7 @@ module sram_top #(
         .DATA_WIDTH(32),
         .ADDR_WIDTH(13),
         .RAM_DEPTH(1 << 13),
-        .DELAY(3),
+        .DELAY(0),
         .IZERO(0)
     ) memory (
         .clk(clk_i),
