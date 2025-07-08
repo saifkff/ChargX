@@ -1,3 +1,4 @@
+/* verilator lint_off PINMISSING */
 module Tracer(
   input         rvfi_i_bool,
   input  [3:0]  rvfi_i_uint4,

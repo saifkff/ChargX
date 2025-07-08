@@ -15,13 +15,17 @@ module ID_EX (
     input wire [31:0] rs1_data_in,rs2_data_in,imm_in,pcplus4_in,pc_plus_imm_in,
     input wire [4:0] rd_in,rs1_in,rs2_in,
     input wire [31:0] current_pc_in,jal_return_add_in,
-    input wire lb_in,lh_in,lw_in,lbu_in,lhu_in,
+    input wire lb_in,lh_in,lw_in,lbu_in,lhu_in,ins_valid_pin_in,
+    input wire we_in,
+    input wire [3:0] wmask_in,
     output reg [3:0] alu_sel_out,
     output reg wenb_out,rs2_imm_sel_out,load_enb_out,jal_enb_out,branch_enb_out,lui_enb_out,auipc_wenb_out,sb_out,sh_out,sw_out,store_enb_out,
     output reg [31:0] rs1_data_out,rs2_data_out,imm_out,pcplus4_out,pc_plus_imm_out,
     output reg [4:0] rd_out,rs1_out,rs2_out,
     output reg [31:0] current_pc_out,jal_return_add_out,
-    output reg lb_out,lh_out,lw_out,lbu_out,lhu_out,
+    output reg lb_out,lh_out,lw_out,lbu_out,lhu_out,ins_valid_pin_out,
+    output reg we_out,
+    output reg [3:0] wmask_out,
     input wire stall,flush
 );
     always @(posedge clk or posedge rst) begin
@@ -33,7 +37,8 @@ module ID_EX (
             rd_out <= 5'b0; rs1_out<=0;rs2_out<=0;store_enb_out<=0;pc_plus_imm_out<=32'b0;
             current_pc_out <= 32'b0;jal_return_add_out<=32'b0;
             lb_out <= 1'b0; lh_out <= 1'b0; lw_out <= 1'b0;
-            lhu_out <= 1'b0; lbu_out <= 1'b0;
+            lhu_out <= 1'b0; lbu_out <= 1'b0;ins_valid_pin_out<=1'b0;
+            we_out <= 1'b0; wmask_out <= 4'b0;
         end
         else if (!stall) begin
             alu_sel_out <= alu_sel_in;
@@ -44,7 +49,8 @@ module ID_EX (
             rd_out <= rd_in;rs1_out<=rs1_in;rs2_out<=rs2_in;store_enb_out<=store_enb_in;pc_plus_imm_out<=pc_plus_imm_in;
             current_pc_out <= current_pc_in;jal_return_add_out<=jal_return_add_in;
             lb_out <= lb_in; lw_out <= lw_in; lh_out <= lh_in;
-            lbu_out <= lbu_in; lhu_out<= lhu_in;
+            lbu_out <= lbu_in; lhu_out<= lhu_in;ins_valid_pin_out<=ins_valid_pin_in;
+            we_out <= we_in; wmask_out <= wmask_in;
         end
     end
     
@@ -113,7 +119,9 @@ module control_unit (
     output beq, bne, blt, bge, bltu, bgeu,
     output wenb, rs2_imm_sel,
     output wire [31:0] jal_jump_target,jal_return_add, pcplusimm,
-    output lui_enb, auipc_wenb, load_enb, jal_enb, branch_enb, in_to_pr,store_enb
+    output lui_enb, auipc_wenb, load_enb, jal_enb, branch_enb, in_to_pr,store_enb,
+    output wire we,
+    output wire [3:0] wmask
 );
     wire [6:0] opcode = instruction[6:0];
     wire [2:0] funct3 = instruction[14:12];
@@ -218,9 +226,15 @@ module control_unit (
     assign jal_jump_target =  current_pc + imm_for_jal;
     assign jal_return_add = pcplus4;
     assign pcplusimm = pcplus4 + imm_for_jal;
+    assign we = sb | sh | sw;
+    assign wmask[0] = sb | sh | sw;
+    assign wmask[1] = sh | sw;
+    assign wmask[2] = sw;
+    assign wmask[3] = sw;
+
 
 endmodule
-module data_mem(
+/*module data_mem(
     input clk, 
     input load_enb,
     input sb, sh, sw,
@@ -229,49 +243,77 @@ module data_mem(
     input [31:0] write_data,
     output reg [31:0] read_data
 );
-    reg [7:0] memory [4096:0];
+    reg [31:0] memory [4095:0];
+
+    wire valid_address;
+    assign valid_address = (address[31:15] == 17'b0) && (address[14:2] == 13'h1FFF);
+
+    // Write mask for byte enables
+    wire [3:0] wmask;
+    assign wmask[0] = (sw | sh | sb);
+    assign wmask[1] = (sw | sh);
+    assign wmask[2] = sw;
+    assign wmask[3] = sw;
+
+    // Load logic (combinational)
     always @(*) begin
-        if (load_enb) begin
-            if (lb) begin
-                read_data = {{24{memory[address][7]}}, memory[address]};  
-            end
-            else if (lh) begin
-                read_data = {{16{memory[address+1][7]}}, memory[address+1], memory[address]};  
-            end
-            else if (lw) begin
-                read_data = {memory[address+3], memory[address+2], memory[address+1], memory[address]};  
-            end
-            else if (lbu) begin
-                read_data = {24'b0, memory[address]};  
-            end
-            else if (lhu) begin
-                read_data = {16'b0, memory[address+1], memory[address]};  
-            end
-            else begin
-                read_data = 32'b0; // Default for load_enb = 1 but no specific load
-            end
-        end
-        else begin
-            read_data = 32'b0; // Default when no load
+        if (load_enb && valid_address) begin
+            case (1'b1)
+                lb: begin
+                    case (address[1:0])
+                        2'b00: read_data = {{24{memory[address[14:2]][7]}}, memory[address[14:2]][7:0]};
+                        2'b01: read_data = {{24{memory[address[14:2]][15]}}, memory[address[14:2]][15:8]};
+                        2'b10: read_data = {{24{memory[address[14:2]][23]}}, memory[address[14:2]][23:16]};
+                        2'b11: read_data = {{24{memory[address[14:2]][31]}}, memory[address[14:2]][31:24]};
+                        default: read_data = 32'b0;
+                    endcase
+                end
+                lh: begin
+                    case (address[1:0])
+                        2'b00: read_data = {{16{memory[address[14:2]][15]}}, memory[address[14:2]][15:0]};
+                        2'b10: read_data = {{16{memory[address[14:2]][31]}}, memory[address[14:2]][31:16]};
+                        default: read_data = 32'b0; // Misaligned halfword access
+                    endcase
+                end
+                lw: begin
+                    if (address[1:0] == 2'b00)
+                        read_data = memory[address[14:2]];
+                    else
+                        read_data = 32'b0; // Misaligned word access
+                end
+                lbu: begin
+                    case (address[1:0])
+                        2'b00: read_data = {24'b0, memory[address[14:2]][7:0]};
+                        2'b01: read_data = {24'b0, memory[address[14:2]][15:8]};
+                        2'b10: read_data = {24'b0, memory[address[14:2]][23:16]};
+                        2'b11: read_data = {24'b0, memory[address[14:2]][31:24]};
+                        default: read_data = 32'b0;
+                    endcase
+                end
+                lhu: begin
+                    case (address[1:0])
+                        2'b00: read_data = {16'b0, memory[address[14:2]][15:0]};
+                        2'b10: read_data = {16'b0, memory[address[14:2]][31:16]};
+                        default: read_data = 32'b0; // Misaligned halfword access
+                    endcase
+                end
+                default: read_data = 32'b0; // No valid load instruction
+            endcase
+        end else begin
+            read_data = 32'b0; // Default when load_enb = 0
         end
     end
 
+    // Store logic (sequential)
     always @(posedge clk) begin
-        if (sb) begin
-            memory[address] <= write_data[7:0]; 
-        end
-        else if (sh) begin
-            memory[address] <= write_data[7:0]; 
-            memory[address+1] <= write_data[15:8];  
-        end
-        else if (sw) begin
-            memory[address]   <= write_data[7:0];
-            memory[address+1] <= write_data[15:8];
-            memory[address+2] <= write_data[23:16];
-            memory[address+3] <= write_data[31:24];  
+        if (sb || sh || sw && valid_address) begin
+            if (wmask[0]) memory[address[7:0]][7:0] <= write_data[7:0];
+            if (wmask[1]) memory[address[20:8]][15:8] <= write_data[15:8];
+            if (wmask[2]) memory[address[28:16]][23:16] <= write_data[23:16];
+            if (wmask[3]) memory[address[31:19]][31:24] <= write_data[31:24];
         end
     end
-endmodule
+endmodule */
 module decoder(
     input [31:0] instruction,
     output [4:0] rs1, rs2, rdi
@@ -283,19 +325,23 @@ endmodule
 module IF_ID (
     input wire clk,rst,
     input wire [31:0] instruction_in,pcplus4_in,current_pc_in,
+    input wire ins_valid_pin_in,
     output reg [31:0] instruction_out,pcplus4_out,current_pc_out,
-    input wire stall,flush,flush_for_if
+    input wire stall,flush,flush_for_if,
+    output reg ins_valid_pin_out
 );
     always @(posedge clk or posedge rst) begin
         if (rst || (flush_for_if)) begin
             instruction_out <= 32'b0;
             pcplus4_out <= 32'b0;
             current_pc_out <= 32'b0;
+            ins_valid_pin_out <= 1'b0;
         end
         else if (!stall) begin
             instruction_out <= instruction_in;
             pcplus4_out <= pcplus4_in;
             current_pc_out <= current_pc_in;
+            ins_valid_pin_out <= ins_valid_pin_in;
         end
     end
     
@@ -382,7 +428,7 @@ module fetch (
     input wire stall,
     output wire [31:0] instruction,
     output wire [31:0] pc_out,
-    output reg rvfi_o_valid_0
+    output wire rvfi_o_valid_0
 );
     wire [31:0] pc, pc_next;
 
@@ -449,16 +495,21 @@ module EX_MEM (
     input wire clk,rst,
     input wire [31:0] jal_return_add_in,
     input wire [1:0] sel_bit_mux_in,
+    input wire we_in,
+    input wire [3:0] wmask_in,
     input wire wb_in,load_enb_in,sb_in,sh_in,sw_in,store_enb_in,jal_enb_in,auipc_wenb_in,lui_enb_in,
     input wire [31:0] alu_result_in, store_data_in,pc_plus_imm_in,
     input wire [4:0] rd_in,rs1_in,rs2_in,
-    input wire lb_in,lh_in,lw_in,lbu_in,lhu_in,
+    input wire lb_in,lh_in,lw_in,lbu_in,lhu_in,ins_valid_pin_in,
     output reg wb_out,load_enb_out,sb_out,sh_out,sw_out,store_enb_out,jal_enb_out,
     output reg [31:0] alu_result_out,store_data_out,pc_plus_imm_out,
     output reg [4:0] rd_out,rs1_out,rs2_out,
     output reg [1:0] sel_bit_mux_out,
     output reg [31:0] jal_return_add_out,
     output reg lb_out,lh_out,lw_out,lbu_out,lhu_out,auipc_wenb_out,lui_enb_out,
+    output reg ins_valid_pin_out,
+    output reg we_out,
+    output reg [3:0] wmask_out,
     input wire flush
 );
     always @(posedge clk or posedge rst) begin
@@ -468,7 +519,8 @@ module EX_MEM (
             rd_out <= 5'b0;rs1_out<=5'b0;store_enb_out<=0;jal_enb_out<=0;pc_plus_imm_out<=32'b0;sel_bit_mux_out<=2'b0;jal_return_add_out<=32'b0;
             lb_out <= 1'b0; lh_out <= 1'b0; lw_out <= 1'b0;
             lhu_out <= 1'b0; lbu_out <= 1'b0; rs1_out <= 5'b0; rs2_out <= 5'b0;
-            auipc_wenb_out <= 1'b0; lui_enb_out <= 1'b0;
+            auipc_wenb_out <= 1'b0; lui_enb_out <= 1'b0;ins_valid_pin_out <= 1'b0;
+            we_out <= 1'b0; wmask_out <= 4'b0;
         end
         else begin 
             wb_out <= wb_in; load_enb_out <= load_enb_in; sb_out <= sb_in; sh_out <= sh_in; sw_out <= sw_in;
@@ -478,7 +530,8 @@ module EX_MEM (
             lb_out <= lb_in; lw_out <= lw_in; lh_out <= lh_in;
             lbu_out <= lbu_in; lhu_out<= lhu_in;
             rs1_out <= rs1_in; rs2_out <= rs2_in;
-            auipc_wenb_out <= auipc_wenb_in; lui_enb_out <= lui_enb_in;
+            auipc_wenb_out <= auipc_wenb_in; lui_enb_out <= lui_enb_in;ins_valid_pin_out<=ins_valid_pin_in;
+            we_out <= we_in; wmask_out <= wmask_in;
         end
     end
     
@@ -490,11 +543,13 @@ module MEM_WB (
     input wire wenb_in,load_enb_in, jal_enb_in,lui_enb_in,auipc_wenb_in,
     input wire [31:0] mem_data_in,alu_result_in,pcplus4_in,pc_plus_imm_in,
     input wire [4:0] rd_in,
+    input wire ins_valid_pin_in,
     output reg wenb_out,load_enb_out,jal_enb_out,lui_enb_out,auipc_wenb_out,
     output reg [31:0] mem_data_out, alu_result_out, pcplus4_out,pc_plus_imm_out,
     output reg [4:0] rd_out,
     output reg [1:0] sel_bit_mux_out,
-    output reg [31:0] jal_return_add_out
+    output reg [31:0] jal_return_add_out,
+    output reg ins_valid_pin_out
 );
     always @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -502,13 +557,13 @@ module MEM_WB (
             auipc_wenb_out <= 1'b0;
             mem_data_out <= 32'b0; alu_result_out <= 32'b0; pcplus4_out <= 32'b0;
             rd_out <= 5'b0;pc_plus_imm_out<=32'b0;sel_bit_mux_out<=2'b0;
-            jal_return_add_out <= 32'b0;
+            jal_return_add_out <= 32'b0;ins_valid_pin_out <= 1'b0;
         end
         else begin
             wenb_out <= wenb_in; load_enb_out <= load_enb_in; jal_enb_out <= jal_enb_in; lui_enb_out <= lui_enb_in; auipc_wenb_out <= auipc_wenb_in;
             mem_data_out <= mem_data_in; alu_result_out <= alu_result_in; pcplus4_out <= pcplus4_in;
             rd_out <= rd_in;pc_plus_imm_out<=pc_plus_imm_in;sel_bit_mux_out<=sel_bit_mux_in;
-            jal_return_add_out <= jal_return_add_in;
+            jal_return_add_out <= jal_return_add_in;ins_valid_pin_out <= ins_valid_pin_in;
         end
     end
 endmodule
@@ -531,7 +586,7 @@ module instruction_mem (
         else begin
             rvfi_o_valid_0 = 1;
         end
-    end 
+    end
 
 endmodule
 module pc_plus_4(
@@ -548,7 +603,7 @@ module mux_rs2 (
 
     always @(*) begin
       case (sel_bit)
-            4'b0000: output_data_forstore = rs2;                 
+            4'b1000: output_data_forstore = rs2;                 
             4'b0010: output_data_forstore = {24'b0, rs2[7:0]};   
             4'b0100: output_data_forstore = {16'b0, rs2[15:0]};  
             default: output_data_forstore = 32'b0;               

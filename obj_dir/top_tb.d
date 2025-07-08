@@ -1,8 +1,8 @@
-top_tb.o: ../top_tb.cpp /home/saif/verilator/include/verilated.h \
- /home/saif/verilator/include/verilatedos.h \
- /home/saif/verilator/include/verilated_config.h \
- /home/saif/verilator/include/verilated_types.h \
- /home/saif/verilator/include/verilated_funcs.h \
- /home/saif/verilator/include/verilated_vcd_c.h \
- /home/saif/verilator/include/verilated.h \
- /home/saif/verilator/include/verilated_trace.h Vtop.h
+top_tb.o: ../top_tb.cpp /usr/share/verilator/include/verilated.h \
+ /usr/share/verilator/include/verilatedos.h \
+ /usr/share/verilator/include/verilated_config.h \
+ /usr/share/verilator/include/verilated_types.h \
+ /usr/share/verilator/include/verilated_funcs.h \
+ /usr/share/verilator/include/verilated_vcd_c.h \
+ /usr/share/verilator/include/verilated.h \
+ /usr/share/verilator/include/verilated_trace.h Vcore.h

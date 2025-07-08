@@ -1,4 +1,5 @@
-module top (
+/* verilator lint_off PINMISSING */
+module core (
     input wire clk,rst,
     output wire [31:0] if_instruction,if_pc_out,id_instruction,
     output wire [4:0] id_rs1, id_rs2, id_rd,wb_rd,
@@ -46,6 +47,10 @@ module top (
     wire [4:0] mem_rs1, mem_rs2 ;
     wire [31:0] id_auipc_pc_plus_imm;
     wire mem_auipc_wenb, mem_lui_enb;
+    wire if_id_ins_valid_pin,id_ex_ins_valid_pin,ex_mem_ins_valid_pin,mem_wb_ins_valid_pin;
+    wire [3:0] id_wmask, ex_wmask, mem_wmask,wmask_final;
+    wire id_we, ex_we, mem_we;
+    wire [4:0] rs1_final,rs2_final;
 
     pc_plus_4 pcplus4(
         .pc(fetch.PC.pc_out),
@@ -54,7 +59,7 @@ module top (
     fetch fetch (
         .clk(clk),
         .rst(rst),
-        .instruction(rvfi_o_insn_0),
+        .instruction(if_instruction),
         .pc_out(if_pc_out),
         .sel(ex_sel_bit_mux),
         .pc_plus_4(if_pcplus4),
@@ -67,7 +72,7 @@ module top (
     IF_ID if_id(
         .clk(clk),
         .rst(rst),
-        .instruction_in(rvfi_o_insn_0),
+        .instruction_in(if_instruction),
         .pcplus4_in(if_pcplus4),
         .instruction_out(id_instruction),
         .pcplus4_out(id_pcplus4),
@@ -75,7 +80,9 @@ module top (
         .flush(flush),
         .flush_for_if(flush_for_if),
         .current_pc_in(fetch.PC.pc_out),
-        .current_pc_out(if_current_pc)
+        .current_pc_out(if_current_pc),
+        .ins_valid_pin_in(rvfi_o_valid_0),
+        .ins_valid_pin_out(if_id_ins_valid_pin)
     );
     decoder decoder(
         .instruction(id_instruction),
@@ -124,7 +131,9 @@ module top (
         .imm_for_jal(id_imm),
         .jal_return_add(jal_return_add),
         .pcplus4(id_pcplus4),
-        .pcplusimm(id_pc_plus_imm)
+        .pcplusimm(id_pc_plus_imm),
+        .we(id_we),
+        .wmask(id_wmask)
     );
     hazard_detction hazard_detction(
         .id_rs1(id_rs1),
@@ -170,7 +179,10 @@ module top (
         .lb_in(id_lb), .lh_in(id_lh), .lw_in(id_lw),
         .lhu_in(id_lhu), .lbu_in(id_lbu),
         .lb_out(ex_lb), .lh_out(ex_lh), .lw_out(ex_lw),
-        .lbu_out(ex_lbu), .lhu_out(ex_lhu)
+        .lbu_out(ex_lbu), .lhu_out(ex_lhu),
+        .ins_valid_pin_in(if_id_ins_valid_pin),.ins_valid_pin_out(id_ex_ins_valid_pin),
+        .we_in(id_we), .wmask_in(id_wmask),
+        .we_out(ex_we), .wmask_out(ex_wmask)
     );
     forwarding_unit forwarding_unit(
         .ex_rs1(ex_rs1),.ex_rs2(ex_rs2),.id_rs1(id_rs1),.id_rs2(id_rs2),
@@ -204,7 +216,7 @@ module top (
     );
     assign ex_pc_plus_imm_2 = ex_pc_plus_imm;
     mux_rs2 mux_rs2(
-        .rs2(ex_rs2_forwarded),.sel_bit({ex_sb,ex_sh,ex_sw,1'b0}),
+        .rs2(ex_rs2_forwarded),.sel_bit({ex_sw,ex_sh,ex_sb,1'b0}),
         .output_data_forstore(ex_store_data)
     );
     EX_MEM ex_mem(
@@ -229,14 +241,17 @@ module top (
         .lbu_out(mem_lbu), .lhu_out(mem_lhu),
         .rs1_out(mem_rs1), .rs2_out(mem_rs2),
         .auipc_wenb_in(ex_auipc_wenb), .auipc_wenb_out(mem_auipc_wenb),
-        .lui_enb_in(ex_lui_enb), .lui_enb_out(mem_lui_enb)
+        .lui_enb_in(ex_lui_enb), .lui_enb_out(mem_lui_enb),
+        .ins_valid_pin_in(id_ex_ins_valid_pin),.ins_valid_pin_out(ex_mem_ins_valid_pin),
+        .we_in(ex_we), .wmask_in(ex_wmask),
+        .we_out(mem_we), .wmask_out(mem_wmask)
     );
-    data_mem data_mem(
+    /* data_mem data_mem(
         .clk(clk),.load_enb(mem_load_enb),.sb(mem_sb),.sh(mem_sh),.sw(mem_sw),
         .lb(mem_lb),.lw(mem_lw),.lh(mem_lh),.lhu(mem_lhu),.lbu(mem_lbu),
         .address(mem_alu_result),.write_data(mem_store_data),
         .read_data(mem_read_data)
-    );
+    ); */
     MEM_WB mem_wb(
         .clk(clk),
         .rst(rst),
@@ -253,7 +268,8 @@ module top (
         .mem_data_out(wb_mem_data),.alu_result_out(wb_alu_result),
         .pcplus4_out(wb_pcplus4),.rd_out(wb_rd),.wenb_out(wb_wenb),
         .jal_return_add_in(mem_jal_return_add),
-        .jal_return_add_out(wb_jal_return_add)
+        .jal_return_add_out(wb_jal_return_add),
+        .ins_valid_pin_in(ex_mem_ins_valid_pin),.ins_valid_pin_out(mem_wb_ins_valid_pin)
     );
     priority_encoder_8to3 priority_encoder_8to3(
         .alu_result(alu_result_pri_enc),.load_enable(wb_load_enb),.jal_enb(wb_jal_enb),
@@ -265,6 +281,30 @@ module top (
         .alu_result(wb_alu_result),.load_result(wb_mem_data),
         .pc_plus_4(wb_jal_return_add),.pc_plus_imm(wb_pc_plus_imm),
         .imm_for_b_type(ex_imm),.sel(pri_enc_sel),.out(wb_data)
+    );
+
+    sram_top data_mem(
+        .clk_i(clk),
+        .rst_i(rst),
+        .csb_i(1'b1),
+        .addr_i(mem_alu_result[12:0]),
+        .wdata_i(mem_store_data),
+        .wmask_i(mem_wmask),
+        .we_i(mem_we),
+        .rdata_o(mem_read_data)
+    );
+    delayRegister delayRegister(
+        .clk(clk), .rst(rst),
+        .wmask_in(mem_wmask),
+        .wmask_out(wmask_final),
+        .rs1_in(mem_rs1), .rs2_in(mem_rs2),
+        .rs1_out(rs1_final), .rs2_out(rs2_final)
+    );
+    Tracer Tracer(
+        .rvfi_i_bool(mem_wb_ins_valid_pin),
+        .rvfi_i_uint4(wmask_final),
+        .rvfi_i_uint5_0(rs1_final),
+        .rvfi_i_uint5_1(rs2_final)
     );
 
 endmodule

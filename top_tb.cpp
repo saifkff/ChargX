@@ -1,8 +1,9 @@
 #include <verilated.h>
 #include "verilated_vcd_c.h"
-#include "Vtop.h"
-
-#define MAX_SIM_TIME 200  // In cycles
+#include "Vcore.h"
+/* verilator lint_off PINMISSING */
+/* verilator lint_off WIDTHRUNC */
+#define MAX_SIM_TIME 100  // In cycles
 
 int main(int argc, char **argv, char **env) {
 	if (false && argc && argv && env) {}
@@ -15,47 +16,47 @@ int main(int argc, char **argv, char **env) {
 
 	VerilatedVcdC *tfp = new VerilatedVcdC;
 
-	const std::unique_ptr<Vtop> top {
-		new Vtop {contextp.get(), "TOP"}
+	const std::unique_ptr<Vcore> core {
+		new Vcore {contextp.get(), "CORE"}
 	};
-	top->trace(tfp, 5);
+	core->trace(tfp, 5);
 
-	tfp->open("logs/top.vcd");
+	tfp->open("logs/core.vcd");
 
 	unsigned int sim_time = 0;
-	top->clk = 1;
+	core->clk = 1;
 	while (!contextp->gotFinish() && sim_time < MAX_SIM_TIME) {
-		top->clk ^= 1;  // Toggle clock
+		core->clk ^= 1;  // Toggle clock
 		if (sim_time <= 1) {
-		    top->rst = 1;  // Assert reset
+		    core->rst = 1;  // Assert reset
 		} else {
-		    top->rst = 0;  // Deassert reset
+		    core->rst = 0;  // Deassert reset
 		}
-		top->eval();  // Evaluate model
+		core->eval();  // Evaluate model
 		tfp->dump(sim_time);
         printf(
             "Time: %d | PC: %d | IF_Inst: %x | ID_Inst: %x | rs1: %d | rs2: %d | rd: %d | rs1_data: %d | rs2_data: %d | ALU_Result: %d | Mem_Read: %d | WB_Data: %d | WB_rd: %d | Stall: %b | Flush: %b | Forward_A: %b | Forward_B: %b\n",
             sim_time,
-            top->if_pc_out,
-            top->if_instruction,
-            top->id_instruction,
-            top->id_rs1,
-            top->id_rs2,
-            top->id_rd,
-            top->id_rs1_data,
-            top->id_rs2_data,
-            top->ex_alu_result,
-            top->mem_read_data,
-            top->wb_data,
-            top->wb_rd,
-            top->stall,
-            top->flush,
-            top->forward_a,
-            top->forward_b
+            core->if_pc_out,
+            core->if_instruction,
+            core->id_instruction,
+            core->id_rs1,
+            core->id_rs2,
+            core->id_rd,
+            core->id_rs1_data,
+            core->id_rs2_data,
+            core->ex_alu_result,
+            core->mem_read_data,
+            core->wb_data,
+            core->wb_rd,
+            core->stall,
+            core->flush,
+            core->forward_a,
+            core->forward_b
         );
 		++sim_time;
 	}
-	top->final();
+	core->final();
 	tfp->close();
 	return 0;
 }
