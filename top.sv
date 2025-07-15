@@ -1,6 +1,9 @@
 /* verilator lint_off PINMISSING */
 /* verilator lint_off NULLPORT */
-module core (
+module core #(
+    // parameter string IMEM = "/home/saif/Five-Stages-RISC-V-/imem.hex",
+    parameter string DMEM = "/home/saif/Five-Stages-RISC-V-/dmem.hex"
+) (
     input wire clk,rst,
     output wire rvfi_o_valid_0,
     output wire [31:0] rvfi_o_insn_0,
@@ -60,7 +63,9 @@ module core (
         .pc(fetch.PC.pc_out),
         .pc_plus4(if_pcplus4)
     );
-    fetch fetch (
+    fetch #(
+        // .IMEM(IMEM)
+    ) fetch (
         .clk(clk),
         .rst(rst),
         .instruction(if_instruction),
@@ -292,7 +297,9 @@ module core (
         .imm_for_b_type(ex_imm),.sel(pri_enc_sel),.out(wb_data)
     );
 
-    sram_top data_mem(
+    sram_top #(
+        .IFILE_IN(DMEM)
+    ) data_mem(
         .clk_i(clk),
         .rst_i(rst),
         .csb_i(1'b1),

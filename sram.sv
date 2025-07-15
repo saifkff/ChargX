@@ -6,7 +6,7 @@ module sram #(
     parameter RAM_DEPTH = 1 << ADDR_WIDTH,
     parameter DELAY = 0,
     parameter IZERO = 0 ,
-    parameter IFILE = ""
+    parameter string IFILE = ""
 ) (
     input clk,
     input csb,web,

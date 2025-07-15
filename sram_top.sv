@@ -4,7 +4,7 @@
 /* verilator lint_off UNUSED */
 /* verilator lint_off SYNCASYNCNET */
 module sram_top #(
-    parameter IFILE_IN = ""
+    parameter string IFILE_IN = ""
 ) (
     input logic clk_i,
     input logic rst_i,
@@ -42,7 +42,8 @@ module sram_top #(
         .ADDR_WIDTH(13),
         .RAM_DEPTH(1 << 13),
         .DELAY(0),
-        .IZERO(0)
+        .IZERO(0),
+        .IFILE(IFILE_IN)
     ) memory (
         .clk(clk_i),
         .csb(csb_i),
