@@ -436,7 +436,7 @@ module hazard_detction(
 
 endmodule
 module fetch #(
-    // parameter string IMEM = "/home/saif/Five-Stages-RISC-V-/imem.hex"
+    parameter FILE_LINK = ""
 ) (
     input wire clk,rst,
   	input wire [1:0] sel,
@@ -456,7 +456,7 @@ module fetch #(
     );
 
     instruction_mem #(
-        // .IFILE_IN(IMEM)
+        .IFILE_IN(FILE_LINK)
     ) IM (
         .addr(pc),
         .instruction(instruction)
@@ -586,12 +586,14 @@ module MEM_WB (
     end
 endmodule
 module instruction_mem #(
-    parameter IFILE_IN = "/home/saif/Five-Stages-RISC-V-/imem.hex"
+    parameter IFILE_IN = "",
+    parameter ADDR_WIDTH = 13,
+    parameter RAM_DEPTH = 1 << ADDR_WIDTH
 ) (
     input wire [31:0] addr,
     output wire [31:0] instruction
 );
-  reg [31:0] memory [0:4096];
+  reg [31:0] memory [0:RAM_DEPTH-1];
 
     initial begin
         $readmemh(IFILE_IN, memory); 

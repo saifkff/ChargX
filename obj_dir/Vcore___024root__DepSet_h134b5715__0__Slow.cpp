@@ -33,7 +33,7 @@ VL_ATTR_COLD void Vcore___024root___eval_initial__TOP(Vcore___024root* vlSelf) {
     Vcore__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
-    VL_READMEM_N(true, 32, 4097, 0, VL_CVT_PACK_STR_NW(10, Vcore__ConstPool__CONST_hdc74baf5_0)
+    VL_READMEM_N(true, 32, 8192, 0, VL_CVT_PACK_STR_NW(10, Vcore__ConstPool__CONST_hdc74baf5_0)
                  ,  &(vlSelfRef.core__DOT__fetch__DOT__IM__DOT__memory)
                  , 0, ~0ULL);
     VL_READMEM_N(true, 32, 8192, 0, std::string{"/home/saif/Five-Stages-RISC-V-/dmem.hex"}
@@ -1100,7 +1100,7 @@ VL_ATTR_COLD void Vcore___024root___ctor_var_reset(Vcore___024root* vlSelf) {
     vlSelf->core__DOT__store_data_final = VL_RAND_RESET_I(32);
     vlSelf->core__DOT____Vcellinp__mux_rs2__sel_bit = VL_RAND_RESET_I(4);
     vlSelf->core__DOT__fetch__DOT__pc = VL_RAND_RESET_I(32);
-    for (int __Vi0 = 0; __Vi0 < 4097; ++__Vi0) {
+    for (int __Vi0 = 0; __Vi0 < 8192; ++__Vi0) {
         vlSelf->core__DOT__fetch__DOT__IM__DOT__memory[__Vi0] = VL_RAND_RESET_I(32);
     }
     vlSelf->core__DOT__if_id__DOT__ins_valid_pin_in = VL_RAND_RESET_I(1);

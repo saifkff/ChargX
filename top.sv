@@ -1,7 +1,7 @@
 /* verilator lint_off PINMISSING */
 /* verilator lint_off NULLPORT */
 module core #(
-    // parameter string IMEM = "/home/saif/Five-Stages-RISC-V-/imem.hex",
+    parameter IMEM = "/home/saif/Five-Stages-RISC-V-/imem.hex",
     parameter string DMEM = "/home/saif/Five-Stages-RISC-V-/dmem.hex"
 ) (
     input wire clk,rst,
@@ -64,7 +64,7 @@ module core #(
         .pc_plus4(if_pcplus4)
     );
     fetch #(
-        // .IMEM(IMEM)
+        .FILE_LINK(IMEM)
     ) fetch (
         .clk(clk),
         .rst(rst),

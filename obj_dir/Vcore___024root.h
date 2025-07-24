@@ -219,7 +219,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vcore___024root final : public VerilatedModul
         IData/*31:0*/ core__DOT__delayRegister__DOT__rs2_data_1_delay;
         IData/*31:0*/ core__DOT__delayRegister__DOT__pc_w_1_delay;
         IData/*31:0*/ __VactIterCount;
-        VlUnpacked<IData/*31:0*/, 4097> core__DOT__fetch__DOT__IM__DOT__memory;
+        VlUnpacked<IData/*31:0*/, 8192> core__DOT__fetch__DOT__IM__DOT__memory;
         VlUnpacked<IData/*31:0*/, 32> core__DOT__regfile__DOT__registers;
         VlUnpacked<IData/*31:0*/, 8192> core__DOT__data_mem__DOT__memory__DOT__mem;
         VlUnpacked<CData/*0:0*/, 3> __Vm_traceActivity;

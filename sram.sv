@@ -4,7 +4,7 @@ module sram #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 13,
     parameter RAM_DEPTH = 1 << ADDR_WIDTH,
-    parameter DELAY = 0,
+    parameter DELAY = 3,
     parameter IZERO = 0 ,
     parameter string IFILE = ""
 ) (

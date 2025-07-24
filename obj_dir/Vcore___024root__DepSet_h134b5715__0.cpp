@@ -715,16 +715,9 @@ VL_INLINE_OPT void Vcore___024root___nba_sequent__TOP__1(Vcore___024root* vlSelf
         vlSelfRef.core__DOT__id_current_pc = vlSelfRef.core__DOT__fetch__DOT__pc;
         vlSelfRef.core__DOT__id_pcplus4 = ((IData)(4U) 
                                            + vlSelfRef.core__DOT__fetch__DOT__pc);
-        vlSelfRef.core__DOT__id_instruction = ((0x1000U 
-                                                >= 
-                                                (0x1fffU 
-                                                 & (vlSelfRef.core__DOT__fetch__DOT__pc 
-                                                    >> 2U)))
-                                                ? vlSelfRef.core__DOT__fetch__DOT__IM__DOT__memory
-                                               [(0x1fffU 
-                                                 & (vlSelfRef.core__DOT__fetch__DOT__pc 
-                                                    >> 2U))]
-                                                : 0U);
+        vlSelfRef.core__DOT__id_instruction = vlSelfRef.core__DOT__fetch__DOT__IM__DOT__memory
+            [(0x1fffU & (vlSelfRef.core__DOT__fetch__DOT__pc 
+                         >> 2U))];
     }
     if (vlSelfRef.rst) {
         vlSelfRef.core__DOT__fetch__DOT__pc = 0U;

@@ -50,13 +50,9 @@ void Vcore___024root__trace_chg_0_sub_0(Vcore___024root* vlSelf, VerilatedVcd::B
         bufp->chgIData(oldp+23,(vlSelfRef.core__DOT__delayRegister__DOT__pc_w_1_delay),32);
     }
     if (VL_UNLIKELY((vlSelfRef.__Vm_traceActivity[2U]))) {
-        bufp->chgIData(oldp+24,(((0x1000U >= (0x1fffU 
-                                              & (vlSelfRef.core__DOT__fetch__DOT__pc 
-                                                 >> 2U)))
-                                  ? vlSelfRef.core__DOT__fetch__DOT__IM__DOT__memory
-                                 [(0x1fffU & (vlSelfRef.core__DOT__fetch__DOT__pc 
-                                              >> 2U))]
-                                  : 0U)),32);
+        bufp->chgIData(oldp+24,(vlSelfRef.core__DOT__fetch__DOT__IM__DOT__memory
+                                [(0x1fffU & (vlSelfRef.core__DOT__fetch__DOT__pc 
+                                             >> 2U))]),32);
         bufp->chgIData(oldp+25,(((IData)(4U) + vlSelfRef.core__DOT__fetch__DOT__pc)),32);
         bufp->chgIData(oldp+26,(vlSelfRef.core__DOT__id_instruction),32);
         bufp->chgCData(oldp+27,((0x1fU & (vlSelfRef.core__DOT__id_instruction 
