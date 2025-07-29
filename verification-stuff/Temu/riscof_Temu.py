@@ -92,7 +92,7 @@ class Temu(pluginTemplate):
             test = testentry['test_path']
             test_dir = testentry['work_dir']
             elf = 'my.elf'
-            sig_file = os.path.join(test_dir, self.name[:-1] + ".signature")
+            sig_file = os.path.join(test_dir, "file.signature")
             compile_macros = ' -D' + " -D".join(testentry['macros'])
 
             cmd = self.compile_cmd.format(testentry['isa'].lower(), self.xlen, test, elf, compile_macros)
@@ -107,7 +107,9 @@ class Temu(pluginTemplate):
                     self.hexdump.format('dmem.bin', '/home/ousaif/Five-Stages-RISC-V-/dmem.hex'),
                     f'cd {self.dut}',
                     self.verilator_cmd.format(self.dut),
-                    f'{self.dut}/obj_dir/Vcore'
+                    f'{self.dut}/obj_dir/Vcore',
+                    f'cd -',
+                    f"cp {self.dut}/file.signature {testentry['work_dir']}/file.signature"
                 ))
             else:
                 simcmd = 'echo "NO RUN"'
