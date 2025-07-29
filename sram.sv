@@ -1,4 +1,4 @@
-
+/* verilator lint_off WIDTHEXPAND */
 module sram #(
     parameter NUM_WMASKS = 4,
     parameter DATA_WIDTH = 32,

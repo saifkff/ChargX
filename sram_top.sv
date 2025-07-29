@@ -3,6 +3,7 @@
 /* verilator lint_off WIDTH */
 /* verilator lint_off UNUSED */
 /* verilator lint_off SYNCASYNCNET */
+/* verilator lint_off WIDTHEXPAND */
 module sram_top #(
     parameter string IFILE_IN = ""
 ) (
