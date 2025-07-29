@@ -18,7 +18,7 @@ $timescale 1s $end
   $var wire 32 k" rvfi_o_mem_rdata_0 [31:0] $end
   $var wire 32 l" rvfi_o_mem_wdata_0 [31:0] $end
   $scope module core $end
-   $var wire 312 m" IMEM [311:0] $end
+   $var wire 64 m" IMEM [63:0] $end
    $var wire 1 ]" clk $end
    $var wire 1 ^" rst $end
    $var wire 1 _" rvfi_o_valid_0 $end
@@ -57,7 +57,7 @@ $timescale 1s $end
    $var wire 2 M mem_sel_bit_mux [1:0] $end
    $var wire 32 N ex_pc_plus_imm [31:0] $end
    $var wire 32 N ex_pc_plus_imm_2 [31:0] $end
-   $var wire 32 w" ex_rs1_plus_imm_for_jalr [31:0] $end
+   $var wire 32 o" ex_rs1_plus_imm_for_jalr [31:0] $end
    $var wire 32 O id_pcplus4 [31:0] $end
    $var wire 1 P mem_jal_enb $end
    $var wire 5 Q ex_rd [4:0] $end
@@ -165,7 +165,7 @@ $timescale 1s $end
    $var wire 2 X! forward_d2 [1:0] $end
    $var wire 32 Y! id_current_pc [31:0] $end
    $var wire 32 Z! ex_current_pc [31:0] $end
-   $var wire 32 x" if_current_pc [31:0] $end
+   $var wire 32 p" if_current_pc [31:0] $end
    $var wire 32 [! ex_jal_return_add [31:0] $end
    $var wire 1 \! ex_lb $end
    $var wire 1 ]! ex_lh $end
@@ -323,7 +323,7 @@ $timescale 1s $end
     $var wire 1 %" i6 $end
     $var wire 1 &" i7 $end
     $var wire 1 '" i8 $end
-    $var wire 9 y" selected_bits [8:0] $end
+    $var wire 9 q" selected_bits [8:0] $end
     $var wire 1 (" out0 $end
     $var wire 1 )" out1 $end
     $var wire 1 *" out2 $end
@@ -341,7 +341,7 @@ $timescale 1s $end
    $scope module data_mem $end
     $var wire 1 ]" clk_i $end
     $var wire 1 ^" rst_i $end
-    $var wire 1 z" csb_i $end
+    $var wire 1 r" csb_i $end
     $var wire 13 5" addr_i [12:0] $end
     $var wire 32 @! wdata_i [31:0] $end
     $var wire 4 r! wmask_i [3:0] $end
@@ -352,16 +352,16 @@ $timescale 1s $end
     $var wire 32 . wdata_o [31:0] $end
     $var wire 4 / wmask_o [3:0] $end
     $var wire 1 0 we_o $end
-    $var wire 32 {" rdata_i [31:0] $end
+    $var wire 32 s" rdata_i [31:0] $end
     $scope module memory $end
-     $var wire 32 |" NUM_WMASKS [31:0] $end
-     $var wire 32 }" DATA_WIDTH [31:0] $end
-     $var wire 32 ~" ADDR_WIDTH [31:0] $end
-     $var wire 32 !# RAM_DEPTH [31:0] $end
-     $var wire 32 "# DELAY [31:0] $end
-     $var wire 32 "# IZERO [31:0] $end
+     $var wire 32 t" NUM_WMASKS [31:0] $end
+     $var wire 32 u" DATA_WIDTH [31:0] $end
+     $var wire 32 v" ADDR_WIDTH [31:0] $end
+     $var wire 32 w" RAM_DEPTH [31:0] $end
+     $var wire 32 x" DELAY [31:0] $end
+     $var wire 32 x" IZERO [31:0] $end
      $var wire 1 ]" clk $end
-     $var wire 1 z" csb $end
+     $var wire 1 r" csb $end
      $var wire 1 t! web $end
      $var wire 4 r! wmask [3:0] $end
      $var wire 13 5" addr [12:0] $end
@@ -373,7 +373,7 @@ $timescale 1s $end
      $var wire 13 4 addr_reg [12:0] $end
      $var wire 32 5 din_reg [31:0] $end
      $var wire 32 6 dout_reg [31:0] $end
-     $var wire 32 ## i [31:0] $end
+     $var wire 32 y" i [31:0] $end
     $upscope $end
    $upscope $end
    $scope module decoder $end
@@ -466,7 +466,7 @@ $timescale 1s $end
     $var wire 1 H flush $end
    $upscope $end
    $scope module fetch $end
-    $var wire 312 m" FILE_LINK [311:0] $end
+    $var wire 64 m" FILE_LINK [63:0] $end
     $var wire 1 ]" clk $end
     $var wire 1 ^" rst $end
     $var wire 2 K sel [1:0] $end
@@ -480,9 +480,9 @@ $timescale 1s $end
     $var wire 32 v! pc_next [31:0] $end
     $var wire 32 6" pc [31:0] $end
     $scope module IM $end
-     $var wire 312 m" IFILE_IN [311:0] $end
-     $var wire 32 ~" ADDR_WIDTH [31:0] $end
-     $var wire 32 !# RAM_DEPTH [31:0] $end
+     $var wire 64 m" IFILE_IN [63:0] $end
+     $var wire 32 v" ADDR_WIDTH [31:0] $end
+     $var wire 32 w" RAM_DEPTH [31:0] $end
      $var wire 32 6" addr [31:0] $end
      $var wire 32 ; instruction [31:0] $end
     $upscope $end
@@ -606,7 +606,7 @@ $timescale 1s $end
     $var wire 32 ; instruction_in [31:0] $end
     $var wire 32 < pcplus4_in [31:0] $end
     $var wire 32 6" current_pc_in [31:0] $end
-    $var wire 1 $# ins_valid_pin_in $end
+    $var wire 1 z" ins_valid_pin_in $end
     $var wire 32 = instruction_out [31:0] $end
     $var wire 32 O pcplus4_out [31:0] $end
     $var wire 32 Y! current_pc_out [31:0] $end
@@ -1001,19 +1001,19 @@ b00000000000000000000000000000000 i"
 b0000 j"
 b00000000000000000000000000000000 k"
 b00000000000000000000000000000000 l"
-b001011110110100001101111011011010110010100101111011100110110000101101001011001100010111101000110011010010111011001100101001011010101001101110100011000010110011101100101011100110010110101010010010010010101001101000011001011010101011000101101001011110110100101101101011001010110110100101110011010000110010101111000 m"
-b00000000000000000000000000000000 w"
+b0110100101101101011001010110110100101110011010000110010101111000 m"
+b00000000000000000000000000000000 o"
+b00000000000000000000000000000000 p"
+b000000000 q"
+1r"
+b00000000000000000000000000000000 s"
+b00000000000000000000000000000100 t"
+b00000000000000000000000000100000 u"
+b00000000000000000000000000001101 v"
+b00000000000000000010000000000000 w"
 b00000000000000000000000000000000 x"
-b000000000 y"
-1z"
-b00000000000000000000000000000000 {"
-b00000000000000000000000000000100 |"
-b00000000000000000000000000100000 }"
-b00000000000000000000000000001101 ~"
-b00000000000000000010000000000000 !#
-b00000000000000000000000000000000 "#
-b00000000000000000000000000000000 ##
-0$#
+b00000000000000000000000000000000 y"
+0z"
 #1
 1,
 10

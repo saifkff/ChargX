@@ -26,17 +26,15 @@ VL_ATTR_COLD void Vcore___024root___eval_initial(Vcore___024root* vlSelf) {
     Vcore___024root____Vm_traceActivitySetAll(vlSelf);
 }
 
-extern const VlWide<10>/*319:0*/ Vcore__ConstPool__CONST_hdc74baf5_0;
-
 VL_ATTR_COLD void Vcore___024root___eval_initial__TOP(Vcore___024root* vlSelf) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vcore___024root___eval_initial__TOP\n"); );
     Vcore__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
-    VL_READMEM_N(true, 32, 8192, 0, VL_CVT_PACK_STR_NW(10, Vcore__ConstPool__CONST_hdc74baf5_0)
+    VL_READMEM_N(true, 32, 8192, 0, std::string{"imem.hex"}
                  ,  &(vlSelfRef.core__DOT__fetch__DOT__IM__DOT__memory)
                  , 0, ~0ULL);
-    VL_READMEM_N(true, 32, 8192, 0, std::string{"/home/saif/Five-Stages-RISC-V-/dmem.hex"}
+    VL_READMEM_N(true, 32, 8192, 0, std::string{"dmem.hex"}
                  ,  &(vlSelfRef.core__DOT__data_mem__DOT__memory__DOT__mem)
                  , 0, ~0ULL);
 }
