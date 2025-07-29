@@ -109,7 +109,7 @@ class Temu(pluginTemplate):
                     self.verilator_cmd.format(self.dut),
                     f'{self.dut}/obj_dir/Vcore',
                     f'cd -',
-                    f"cp {self.dut}/file.signature {os.path.join(test_dir, self.name[:-1] + ".signature")}"
+                    f"cp {self.dut}/file.signature {os.path.join(test_dir, self.name[:-1] + '.signature')}"
                 ))
             else:
                 simcmd = 'echo "NO RUN"'
