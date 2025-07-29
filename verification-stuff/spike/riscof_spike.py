@@ -93,7 +93,7 @@ class spike(pluginTemplate):
 
             execute = "@cd "+testentry['work_dir']+";"
 
-            print(f'{testentry['isa'].lower() = }')
+            # print(f'{testentry['isa'].lower() = }')
             cmd = self.compile_cmd.format(testentry['isa'].lower(), self.xlen) + ' ' + test + ' -o ' + elf
 
             #TODO: we are using -D to enable compile time macros. If your
