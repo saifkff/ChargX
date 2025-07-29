@@ -1,8 +1,8 @@
 /* verilator lint_off PINMISSING */
 /* verilator lint_off NULLPORT */
 module core #(
-    parameter IMEM = "/home/saif/Five-Stages-RISC-V-/imem.hex",
-    parameter string DMEM = "/home/saif/Five-Stages-RISC-V-/dmem.hex"
+    parameter IMEM = "imem.hex",
+    parameter string DMEM = "dmem.hex"
 ) (
     input wire clk,rst,
     output wire rvfi_o_valid_0,
