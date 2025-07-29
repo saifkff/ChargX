@@ -31,7 +31,7 @@ class Temu(pluginTemplate):
             raise SystemExit(1)
 
         # Path to the Verilator-based simulation directory (e.g., your core path)
-        self.dut = os.path.abspath(config['PATH'] if 'PATH' in config else "/home/saif/Five-Stages-RISC-V-")
+        self.dut = os.path.abspath(config['PATH'] if 'PATH' in config else "/home/ousaif/Five-Stages-RISC-V-")
 
         # Number of parallel jobs
         self.num_jobs = str(config['jobs'] if 'jobs' in config else 1)
@@ -103,8 +103,8 @@ class Temu(pluginTemplate):
                 simcmd = '; '.join((
                     self.objcopy.format(self.xlen, elf, 'imem.bin', '.text.init'),
                     self.objcopy.format(self.xlen, elf, 'dmem.bin', '.data'),
-                    self.hexdump.format('imem.bin', '/home/saif/Five-Stages-RISC-V-/imem.hex'),
-                    self.hexdump.format('dmem.bin', '/home/saif/Five-Stages-RISC-V-/dmem.hex'),
+                    self.hexdump.format('imem.bin', '/home/ousaif/Five-Stages-RISC-V-/imem.hex'),
+                    self.hexdump.format('dmem.bin', '/home/ousaif/Five-Stages-RISC-V-/dmem.hex'),
                     f'cd {self.dut}',
                     self.verilator_cmd.format(self.dut),
                     f'{self.dut}/obj_dir/Vcore'
